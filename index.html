@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>J Sneaker Rotation Tracker v14</title>
+<title>J Sneaker Rotation Tracker v15</title>
 <style>
 :root {
 --bg-color: #0b0f19;
@@ -730,7 +730,7 @@ subSelect.innerHTML = '';
 if (macro === 'collezione') {
 subSelect.innerHTML = '<option value="yeezy">Adidas & Yeezy</option><option value="jordanike">Jordan & Nike</option><option value="altro">Altro Collezione</option>';
 } else {
-subSelect.innerHTML = '<option value="lavoro">Lavoro / Quotidiano</option><option value="palestra">Palestra / Sport</option><option value="outdoor">Outdoor / Stivali</option><option value="casual">Casual / Libero</option>';
+subSelect.innerHTML = '<option value="lavoro">Lavoro / Quotidiano</option><option value="palestra">Palestra / Sport</option><option value="outdoor">Outdoor / Stivali</option><option value="casual">Casual / Libero</option><option value="misto">Misto</option><option value="sport">Sport</option><option value="uscite">Uscite</option>';
 }
 }
 
@@ -852,27 +852,33 @@ listCollezione.innerHTML = '';
 logList.innerHTML = '';
 
 let collYeezy = '', collJordanike = '', collAltro = '';
-let comuneLavoro = '', comunePalestra = '', comuneOutdoor = '', comuneCasual = '';
+let subComuneMap = {};
 
 shoes.forEach(s => {
 const card = buildShoeCard(s);
-const sub = s.sub || 'casual';
 if (s.macro === 'collezione') {
-if (sub === 'yeezy') collYeezy += card;
-else if (sub === 'jordanike') collJordanike += card;
+if (s.sub === 'yeezy') collYeezy += card;
+else if (s.sub === 'jordanike') collJordanike += card;
 else collAltro += card;
 } else {
-if (sub === 'lavoro') comuneLavoro += card;
-else if (sub === 'palestra') comunePalestra += card;
-else if (sub === 'outdoor') comuneOutdoor += card;
-else comuneCasual += card;
+let subKey = (s.sub || 'casual').toLowerCase().trim();
+if (!subComuneMap[subKey]) subComuneMap[subKey] = '';
+subComuneMap[subKey] += card;
 }
 });
 
-listComune.innerHTML = `<details class="subcat-accordion" open><summary>// LAVORO & QUOTIDIANO</summary><div class="subcat-content">${comuneLavoro || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>'}</div></details>
-<details class="subcat-accordion" open><summary>// PALESTRA & SPORT</summary><div class="subcat-content">${comunePalestra || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>'}</div></details>
-<details class="subcat-accordion" open><summary>// OUTDOOR & STIVALI</summary><div class="subcat-content">${comuneOutdoor || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>'}</div></details>
-<details class="subcat-accordion" open><summary>// CASUAL & LIBERO</summary><div class="subcat-content">${comuneCasual || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>'}</div></details>`;
+let comuneHtml = '';
+let defaultSubComune = ['lavoro', 'palestra', 'outdoor', 'casual', 'misto', 'sport', 'uscite'];
+defaultSubComune.forEach(sub => {
+if (subComuneMap[sub]) {
+comuneHtml += `<details class="subcat-accordion" open><summary>// ${sub.toUpperCase()}</summary><div class="subcat-content">${subComuneMap[sub]}</div></details>`;
+delete subComuneMap[sub];
+}
+});
+for (let sub in subComuneMap) {
+comuneHtml += `<details class="subcat-accordion" open><summary>// ${sub.toUpperCase()}</summary><div class="subcat-content">${subComuneMap[sub]}</div></details>`;
+}
+listComune.innerHTML = comuneHtml || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>';
 
 listCollezione.innerHTML = `<details class="subcat-accordion" open><summary>// ADIDAS & YEEZY</summary><div class="subcat-content">${collYeezy || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>
 <details class="subcat-accordion" open><summary>// JORDAN & NIKE</summary><div class="subcat-content">${collJordanike || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>
@@ -933,12 +939,17 @@ let getVal = (idx) => (!row.c[idx] || row.c[idx].v === null) ? '' : String(row.c
 let name = getVal(0);
 if (!name || name.toLowerCase() === 'nome') return;
 let goal = parseInt(getVal(1), 10) || 30;
-let macro = getVal(2).toLowerCase().includes('collez') ? 'collezione' : 'uso comune';
-shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: 'casual', lastUsed: null });
+let macroRaw = getVal(2).toLowerCase();
+let subRaw = getVal(3).toLowerCase();
+
+let macro = macroRaw.includes('collezione') ? 'collezione' : 'uso comune';
+let sub = subRaw ? subRaw : 'casual';
+
+shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
 }
 });
 saveLocalData(); renderAll(); syncToServer();
-alert("Importate " + shoes.length + " scarpe!");
+alert("Importate " + shoes.length + " scarpe correttamente!");
 toggleDrawer();
 }
 };
