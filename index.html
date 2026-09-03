@@ -57,10 +57,34 @@ margin-bottom: 20px;
 box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-.header-left { display: flex; align-items: center; justify-content: flex-start; }
-.header-center { display: flex; justify-content: center; align-items: center; cursor: pointer; user-select: none; }
-.header-logo-img { height: 90px; width: auto; max-width: 260px; object-fit: contain; display: block; }
-.header-right { display: flex; justify-content: flex-end; align-items: center; z-index: 60; }
+.header-left {
+display: flex;
+align-items: center;
+justify-content: flex-start;
+}
+
+.header-center {
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+user-select: none;
+}
+
+.header-logo-img {
+height: 90px;
+width: auto;
+max-width: 260px;
+object-fit: contain;
+display: block;
+}
+
+.header-right {
+display: flex;
+justify-content: flex-end;
+align-items: center;
+z-index: 60;
+}
 
 .sync-status-badge {
 font-size: 9px;
@@ -89,6 +113,12 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 -webkit-tap-highlight-color: transparent;
 }
 
+.menu-btn:active {
+background: var(--accent-blue);
+border-color: var(--accent-blue);
+}
+
+/* MENU DRAWER */
 .drawer {
 position: fixed;
 top: 0;
@@ -108,7 +138,9 @@ overflow-y: auto;
 -webkit-overflow-scrolling: touch;
 }
 
-.drawer.open { right: 0; }
+.drawer.open {
+right: 0;
+}
 
 .drawer-header {
 display: flex;
@@ -118,8 +150,20 @@ border-bottom: 1px solid var(--border-color);
 padding-bottom: 12px;
 }
 
-.drawer-header h3 { font-size: 16px; color: var(--accent-blue); font-weight: 800; }
-.close-btn { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; padding: 4px; }
+.drawer-header h3 {
+font-size: 16px;
+color: var(--accent-blue);
+font-weight: 800;
+}
+
+.close-btn {
+background: none;
+border: none;
+color: var(--text-muted);
+font-size: 24px;
+cursor: pointer;
+padding: 4px;
+}
 
 button.btn {
 background: var(--accent-blue);
@@ -139,17 +183,57 @@ box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
 -webkit-tap-highlight-color: transparent;
 }
 
-button.btn-secondary { background: var(--card-color); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
-button.btn-danger { background: var(--accent-color); color: #fff; }
+button.btn-secondary {
+background: var(--card-color);
+color: var(--text-main);
+border: 1px solid var(--border-color);
+box-shadow: none;
+}
 
-.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-.stat-card { background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; }
-.stat-card h4 { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-.stat-card p { font-size: 20px; font-weight: 800; }
+button.btn-danger {
+background: var(--accent-color);
+color: #fff;
+}
 
-.main-layout { display: flex; flex-direction: column; gap: 20px; }
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 10px;
+margin-bottom: 20px;
+}
 
-details.panel-accordion { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
+.stat-card {
+background: var(--card-color);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-md);
+padding: 12px;
+}
+
+.stat-card h4 {
+font-size: 10px;
+color: var(--text-muted);
+text-transform: uppercase;
+margin-bottom: 4px;
+}
+
+.stat-card p {
+font-size: 20px;
+font-weight: 800;
+}
+
+.main-layout {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+details.panel-accordion {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-lg);
+overflow: hidden;
+}
+
 details.panel-accordion summary {
 padding: 16px;
 font-size: 13px;
@@ -163,13 +247,42 @@ align-items: center;
 user-select: none;
 background: rgba(255,255,255,0.02);
 }
-details.panel-accordion summary::-webkit-details-marker { display: none; }
-details.panel-accordion summary::after { content: '▼'; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
-details.panel-accordion[open] summary::after { transform: rotate(180deg); }
-details.panel-accordion summary .badge-count { font-size: 11px; background: rgba(255,255,255,0.08); padding: 3px 10px; border-radius: 12px; color: var(--text-muted); margin-left: auto; margin-right: 8px; }
 
-.panel-content { padding: 16px; border-top: 1px solid var(--border-color); }
-details.subcat-accordion { margin-bottom: 12px; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); }
+details.panel-accordion summary::-webkit-details-marker { display: none; }
+
+details.panel-accordion summary::after {
+content: '▼';
+font-size: 10px;
+color: var(--text-muted);
+transition: transform 0.2s;
+}
+
+details.panel-accordion[open] summary::after {
+transform: rotate(180deg);
+}
+
+details.panel-accordion summary .badge-count {
+font-size: 11px;
+background: rgba(255,255,255,0.08);
+padding: 3px 10px;
+border-radius: 12px;
+color: var(--text-muted);
+margin-left: auto;
+margin-right: 8px;
+}
+
+.panel-content {
+padding: 16px;
+border-top: 1px solid var(--border-color);
+}
+
+details.subcat-accordion {
+margin-bottom: 12px;
+background: rgba(0,0,0,0.15);
+border: 1px solid rgba(255,255,255,0.05);
+border-radius: var(--radius-md);
+}
+
 details.subcat-accordion summary {
 font-size: 11px;
 font-weight: 800;
@@ -182,9 +295,19 @@ justify-content: space-between;
 align-items: center;
 list-style: none;
 }
+
 details.subcat-accordion summary::-webkit-details-marker { display: none; }
-details.subcat-accordion summary::after { content: '►'; font-size: 9px; transition: transform 0.2s; }
-details.subcat-accordion[open] summary::after { transform: rotate(90deg); }
+
+details.subcat-accordion summary::after {
+content: '►';
+font-size: 9px;
+transition: transform 0.2s;
+}
+
+details.subcat-accordion[open] summary::after {
+transform: rotate(90deg);
+}
+
 .subcat-content { padding: 10px; }
 
 .shoe-item {
@@ -198,11 +321,41 @@ justify-content: space-between;
 align-items: center;
 gap: 8px;
 }
+
 .shoe-info { flex-grow: 1; min-width: 0; }
-.shoe-name-text { font-weight: 700; font-size: 13px; color: var(--text-main); margin-bottom: 4px; word-break: break-word; }
-.shoe-meta { font-size: 10px; color: var(--text-muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.code-badge { font-family: monospace; background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: var(--radius-sm); color: var(--accent-blue); font-weight: 700; }
-.usage-badge-container { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.shoe-name-text {
+font-weight: 700;
+font-size: 13px;
+color: var(--text-main);
+margin-bottom: 4px;
+word-break: break-word;
+}
+
+.shoe-meta {
+font-size: 10px;
+color: var(--text-muted);
+display: flex;
+gap: 6px;
+align-items: center;
+flex-wrap: wrap;
+}
+
+.code-badge {
+font-family: monospace;
+background: rgba(255,255,255,0.06);
+padding: 2px 5px;
+border-radius: var(--radius-sm);
+color: var(--accent-blue);
+font-weight: 700;
+}
+
+.usage-badge-container {
+display: flex;
+align-items: center;
+gap: 6px;
+flex-shrink: 0;
+}
 
 .counter-btn {
 width: 32px;
@@ -219,13 +372,39 @@ justify-content: center;
 font-size: 16px;
 -webkit-tap-highlight-color: transparent;
 }
+
 .counter-btn:active { background: var(--accent-blue); }
 .counter-btn.minus:active { background: var(--accent-color); }
-.usage-counter { font-family: monospace; font-size: 13px; font-weight: 800; min-width: 24px; text-align: center; }
-.delete-icon { color: var(--text-muted); cursor: pointer; padding: 4px; font-size: 13px; }
 
-.field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-.field-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.usage-counter {
+font-family: monospace;
+font-size: 13px;
+font-weight: 800;
+min-width: 24px;
+text-align: center;
+}
+
+.delete-icon {
+color: var(--text-muted);
+cursor: pointer;
+padding: 4px;
+font-size: 13px;
+}
+
+.field-group {
+display: flex;
+flex-direction: column;
+gap: 6px;
+margin-bottom: 12px;
+}
+
+.field-group label {
+font-size: 11px;
+font-weight: 700;
+color: var(--text-muted);
+text-transform: uppercase;
+}
+
 .field-group input, .field-group select, .field-group textarea {
 background: var(--bg-color);
 border: 1px solid var(--border-color);
@@ -247,6 +426,7 @@ align-items: center;
 z-index: 999999;
 padding: 16px;
 }
+
 .modal-box {
 background: var(--panel-bg);
 border: 1px solid var(--border-color);
@@ -270,6 +450,7 @@ justify-content: space-between;
 align-items: center;
 gap: 8px;
 }
+
 .log-date { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
 
 .trash-item {
@@ -286,7 +467,6 @@ gap: 8px;
 }
 </style>
 
-<!-- Firebase SDK (Modular) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -305,7 +485,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Funzione globale per salvare su Firebase
+// Funzione globale per sincronizzare i dati su Firebase Cloud
 window.syncToFirebase = function(sData, lData, tData) {
   set(ref(db, 'rotationData'), {
     shoes: sData,
@@ -320,7 +500,7 @@ window.syncToFirebase = function(sData, lData, tData) {
   });
 };
 
-// Sincronizzazione in tempo reale dal database
+// Sincronizzazione in tempo reale con il Database Cloud
 onValue(ref(db, 'rotationData'), (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -330,7 +510,7 @@ onValue(ref(db, 'rotationData'), (snapshot) => {
     renderAll();
     updateStatus("ONLINE");
   } else {
-    // Se il database è vuoto, inizializza con i dati di default
+    // Se il database è completamente vuoto, salva i dati iniziali
     window.syncToFirebase(shoes, logs, trash);
   }
 });
@@ -345,17 +525,17 @@ onValue(ref(db, 'rotationData'), (snapshot) => {
 </div>
 
 <button id="addShoeBtn" class="btn">➕ Aggiungi Scarpa</button>
-<button id="undoBtn" class="btn btn-danger">↩ Undo Ultimo Movimento</button>
 <button id="exportJsonBtn" class="btn btn-secondary">📤 Esporta JSON</button>
+<button id="undoBtn" class="btn btn-danger">↩ Undo Ultimo Movimento</button>
 
 <hr style="border-color: var(--border-color); margin: 4px 0;">
+
 <div style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">🗑️ Cestino Scarpe</div>
 <div id="trash-list" style="max-height:150px; overflow-y:auto; margin-top:6px;">
 <div style="font-size:11px; color:var(--text-muted);">Cestino vuoto.</div>
 </div>
 </div>
 
-<!-- Modal Aggiungi Scarpa -->
 <div id="shoeModal" class="modal-overlay">
 <div class="modal-box">
 <div style="font-size: 16px; font-weight: 800; margin-bottom: 14px;" id="shoeModalTitle">Aggiungi Scarpa</div>
@@ -455,18 +635,36 @@ updateSubGroupOptions();
 initEventListeners();
 
 function initEventListeners() {
-document.getElementById('closeDrawerBtn').addEventListener('click', toggleDrawer);
-document.getElementById('headerCenter').addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
-document.getElementById('addShoeBtn').addEventListener('click', openAddShoeModal);
-document.getElementById('exportJsonBtn').addEventListener('click', exportBackupJSON);
-document.getElementById('undoBtn').addEventListener('click', undoLastLog);
-document.getElementById('mShoeMacro').addEventListener('change', updateSubGroupOptions);
-document.getElementById('closeShoeModalBtn').addEventListener('click', closeShoeModal);
-document.getElementById('saveShoeBtn').addEventListener('click', saveShoeFromModal);
+const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', toggleDrawer);
+
+const headerCenter = document.getElementById('headerCenter');
+if (headerCenter) headerCenter.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+
+const addShoeBtn = document.getElementById('addShoeBtn');
+if (addShoeBtn) addShoeBtn.addEventListener('click', openAddShoeModal);
+
+const exportJsonBtn = document.getElementById('exportJsonBtn');
+if (exportJsonBtn) exportJsonBtn.addEventListener('click', exportBackupJSON);
+
+const undoBtn = document.getElementById('undoBtn');
+if (undoBtn) undoBtn.addEventListener('click', undoLastLog);
+
+const mShoeMacro = document.getElementById('mShoeMacro');
+if (mShoeMacro) mShoeMacro.addEventListener('change', updateSubGroupOptions);
+
+const closeShoeModalBtn = document.getElementById('closeShoeModalBtn');
+if (closeShoeModalBtn) closeShoeModalBtn.addEventListener('click', closeShoeModal);
+
+const saveShoeBtn = document.getElementById('saveShoeBtn');
+if (saveShoeBtn) saveShoeBtn.addEventListener('click', saveShoeFromModal);
 }
 
 function toggleDrawer() {
-document.getElementById('drawerMenu').classList.toggle('open');
+const drawer = document.getElementById('drawerMenu');
+if (drawer) {
+drawer.classList.toggle('open');
+}
 }
 
 function updateStatus(msg) {
