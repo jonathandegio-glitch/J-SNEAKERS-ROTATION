@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>J Sneaker Rotation Tracker v15</title>
+<title>J Sneaker Rotation Tracker v16 (Firebase)</title>
 <style>
 :root {
 --bg-color: #0b0f19;
@@ -57,34 +57,10 @@ margin-bottom: 20px;
 box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-.header-left {
-display: flex;
-align-items: center;
-justify-content: flex-start;
-}
-
-.header-center {
-display: flex;
-justify-content: center;
-align-items: center;
-cursor: pointer;
-user-select: none;
-}
-
-.header-logo-img {
-height: 90px;
-width: auto;
-max-width: 260px;
-object-fit: contain;
-display: block;
-}
-
-.header-right {
-display: flex;
-justify-content: flex-end;
-align-items: center;
-z-index: 60;
-}
+.header-left { display: flex; align-items: center; justify-content: flex-start; }
+.header-center { display: flex; justify-content: center; align-items: center; cursor: pointer; user-select: none; }
+.header-logo-img { height: 90px; width: auto; max-width: 260px; object-fit: contain; display: block; }
+.header-right { display: flex; justify-content: flex-end; align-items: center; z-index: 60; }
 
 .sync-status-badge {
 font-size: 9px;
@@ -113,12 +89,6 @@ box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 -webkit-tap-highlight-color: transparent;
 }
 
-.menu-btn:active {
-background: var(--accent-blue);
-border-color: var(--accent-blue);
-}
-
-/* MENU DRAWER */
 .drawer {
 position: fixed;
 top: 0;
@@ -138,9 +108,7 @@ overflow-y: auto;
 -webkit-overflow-scrolling: touch;
 }
 
-.drawer.open {
-right: 0;
-}
+.drawer.open { right: 0; }
 
 .drawer-header {
 display: flex;
@@ -150,20 +118,8 @@ border-bottom: 1px solid var(--border-color);
 padding-bottom: 12px;
 }
 
-.drawer-header h3 {
-font-size: 16px;
-color: var(--accent-blue);
-font-weight: 800;
-}
-
-.close-btn {
-background: none;
-border: none;
-color: var(--text-muted);
-font-size: 24px;
-cursor: pointer;
-padding: 4px;
-}
+.drawer-header h3 { font-size: 16px; color: var(--accent-blue); font-weight: 800; }
+.close-btn { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; padding: 4px; }
 
 button.btn {
 background: var(--accent-blue);
@@ -183,57 +139,17 @@ box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
 -webkit-tap-highlight-color: transparent;
 }
 
-button.btn-secondary {
-background: var(--card-color);
-color: var(--text-main);
-border: 1px solid var(--border-color);
-box-shadow: none;
-}
+button.btn-secondary { background: var(--card-color); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none; }
+button.btn-danger { background: var(--accent-color); color: #fff; }
 
-button.btn-danger {
-background: var(--accent-color);
-color: #fff;
-}
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--card-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; }
+.stat-card h4 { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+.stat-card p { font-size: 20px; font-weight: 800; }
 
-.stats-grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 10px;
-margin-bottom: 20px;
-}
+.main-layout { display: flex; flex-direction: column; gap: 20px; }
 
-.stat-card {
-background: var(--card-color);
-border: 1px solid var(--border-color);
-border-radius: var(--radius-md);
-padding: 12px;
-}
-
-.stat-card h4 {
-font-size: 10px;
-color: var(--text-muted);
-text-transform: uppercase;
-margin-bottom: 4px;
-}
-
-.stat-card p {
-font-size: 20px;
-font-weight: 800;
-}
-
-.main-layout {
-display: flex;
-flex-direction: column;
-gap: 20px;
-}
-
-details.panel-accordion {
-background: var(--panel-bg);
-border: 1px solid var(--border-color);
-border-radius: var(--radius-lg);
-overflow: hidden;
-}
-
+details.panel-accordion { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
 details.panel-accordion summary {
 padding: 16px;
 font-size: 13px;
@@ -247,42 +163,13 @@ align-items: center;
 user-select: none;
 background: rgba(255,255,255,0.02);
 }
-
 details.panel-accordion summary::-webkit-details-marker { display: none; }
+details.panel-accordion summary::after { content: '▼'; font-size: 10px; color: var(--text-muted); transition: transform 0.2s; }
+details.panel-accordion[open] summary::after { transform: rotate(180deg); }
+details.panel-accordion summary .badge-count { font-size: 11px; background: rgba(255,255,255,0.08); padding: 3px 10px; border-radius: 12px; color: var(--text-muted); margin-left: auto; margin-right: 8px; }
 
-details.panel-accordion summary::after {
-content: '▼';
-font-size: 10px;
-color: var(--text-muted);
-transition: transform 0.2s;
-}
-
-details.panel-accordion[open] summary::after {
-transform: rotate(180deg);
-}
-
-details.panel-accordion summary .badge-count {
-font-size: 11px;
-background: rgba(255,255,255,0.08);
-padding: 3px 10px;
-border-radius: 12px;
-color: var(--text-muted);
-margin-left: auto;
-margin-right: 8px;
-}
-
-.panel-content {
-padding: 16px;
-border-top: 1px solid var(--border-color);
-}
-
-details.subcat-accordion {
-margin-bottom: 12px;
-background: rgba(0,0,0,0.15);
-border: 1px solid rgba(255,255,255,0.05);
-border-radius: var(--radius-md);
-}
-
+.panel-content { padding: 16px; border-top: 1px solid var(--border-color); }
+details.subcat-accordion { margin-bottom: 12px; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); }
 details.subcat-accordion summary {
 font-size: 11px;
 font-weight: 800;
@@ -295,19 +182,9 @@ justify-content: space-between;
 align-items: center;
 list-style: none;
 }
-
 details.subcat-accordion summary::-webkit-details-marker { display: none; }
-
-details.subcat-accordion summary::after {
-content: '►';
-font-size: 9px;
-transition: transform 0.2s;
-}
-
-details.subcat-accordion[open] summary::after {
-transform: rotate(90deg);
-}
-
+details.subcat-accordion summary::after { content: '►'; font-size: 9px; transition: transform 0.2s; }
+details.subcat-accordion[open] summary::after { transform: rotate(90deg); }
 .subcat-content { padding: 10px; }
 
 .shoe-item {
@@ -321,41 +198,11 @@ justify-content: space-between;
 align-items: center;
 gap: 8px;
 }
-
 .shoe-info { flex-grow: 1; min-width: 0; }
-
-.shoe-name-text {
-font-weight: 700;
-font-size: 13px;
-color: var(--text-main);
-margin-bottom: 4px;
-word-break: break-word;
-}
-
-.shoe-meta {
-font-size: 10px;
-color: var(--text-muted);
-display: flex;
-gap: 6px;
-align-items: center;
-flex-wrap: wrap;
-}
-
-.code-badge {
-font-family: monospace;
-background: rgba(255,255,255,0.06);
-padding: 2px 5px;
-border-radius: var(--radius-sm);
-color: var(--accent-blue);
-font-weight: 700;
-}
-
-.usage-badge-container {
-display: flex;
-align-items: center;
-gap: 6px;
-flex-shrink: 0;
-}
+.shoe-name-text { font-weight: 700; font-size: 13px; color: var(--text-main); margin-bottom: 4px; word-break: break-word; }
+.shoe-meta { font-size: 10px; color: var(--text-muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.code-badge { font-family: monospace; background: rgba(255,255,255,0.06); padding: 2px 5px; border-radius: var(--radius-sm); color: var(--accent-blue); font-weight: 700; }
+.usage-badge-container { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
 .counter-btn {
 width: 32px;
@@ -372,39 +219,13 @@ justify-content: center;
 font-size: 16px;
 -webkit-tap-highlight-color: transparent;
 }
-
 .counter-btn:active { background: var(--accent-blue); }
 .counter-btn.minus:active { background: var(--accent-color); }
+.usage-counter { font-family: monospace; font-size: 13px; font-weight: 800; min-width: 24px; text-align: center; }
+.delete-icon { color: var(--text-muted); cursor: pointer; padding: 4px; font-size: 13px; }
 
-.usage-counter {
-font-family: monospace;
-font-size: 13px;
-font-weight: 800;
-min-width: 24px;
-text-align: center;
-}
-
-.delete-icon {
-color: var(--text-muted);
-cursor: pointer;
-padding: 4px;
-font-size: 13px;
-}
-
-.field-group {
-display: flex;
-flex-direction: column;
-gap: 6px;
-margin-bottom: 12px;
-}
-
-.field-group label {
-font-size: 11px;
-font-weight: 700;
-color: var(--text-muted);
-text-transform: uppercase;
-}
-
+.field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.field-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 .field-group input, .field-group select, .field-group textarea {
 background: var(--bg-color);
 border: 1px solid var(--border-color);
@@ -426,7 +247,6 @@ align-items: center;
 z-index: 999999;
 padding: 16px;
 }
-
 .modal-box {
 background: var(--panel-bg);
 border: 1px solid var(--border-color);
@@ -450,7 +270,6 @@ justify-content: space-between;
 align-items: center;
 gap: 8px;
 }
-
 .log-date { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
 
 .trash-item {
@@ -466,37 +285,70 @@ margin-bottom: 6px;
 gap: 8px;
 }
 </style>
+
+<!-- Firebase SDK (Modular) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBcHvz8Y7kbLtXvxutUS7xgSzb3FQe21dQ",
+  authDomain: "j-sneaker-rotation.firebaseapp.com",
+  databaseURL: "https://j-sneaker-rotation-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "j-sneaker-rotation",
+  storageBucket: "j-sneaker-rotation.firebasestorage.app",
+  messagingSenderId: "754988539366",
+  appId: "1:754988539366:web:653691dea108b565c9ca27",
+  measurementId: "G-9LRK77JQHF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Funzione globale per salvare su Firebase
+window.syncToFirebase = function(sData, lData, tData) {
+  set(ref(db, 'rotationData'), {
+    shoes: sData,
+    logs: lData,
+    trash: tData,
+    lastUpdate: new Date().toISOString()
+  }).then(() => {
+    updateStatus("CLOUD [OK]");
+  }).catch((err) => {
+    updateStatus("ERR CLOUD");
+    console.error(err);
+  });
+};
+
+// Sincronizzazione in tempo reale dal database
+onValue(ref(db, 'rotationData'), (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    if (data.shoes) shoes = data.shoes;
+    if (data.logs) logs = data.logs;
+    if (data.trash) trash = data.trash;
+    renderAll();
+    updateStatus("ONLINE");
+  } else {
+    // Se il database è vuoto, inizializza con i dati di default
+    window.syncToFirebase(shoes, logs, trash);
+  }
+});
+</script>
 </head>
 <body>
 
 <div id="drawerMenu" class="drawer">
 <div class="drawer-header">
-<h3>Menu & Sync</h3>
+<h3>Menu & Cloud</h3>
 <button id="closeDrawerBtn" class="close-btn">✕</button>
 </div>
 
-<div class="field-group">
-<label>URL Google Apps Script</label>
-<input type="text" id="appsScriptUrl" placeholder="Incolla Web App URL...">
-<button id="syncNowBtn" class="btn btn-secondary" style="margin-top:6px;">☁️ Trascrivi su Google Fogli</button>
-</div>
-
-<div class="field-group">
-<label>Link Google Fogli da Importare</label>
-<input type="text" id="importSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
-<button id="importSheetBtn" class="btn btn-secondary" style="margin-top:6px;">Importa da Google Fogli</button>
-</div>
-
-<hr style="border-color: var(--border-color); margin: 4px 0;">
-
 <button id="addShoeBtn" class="btn">➕ Aggiungi Scarpa</button>
-<button id="importLocalBtn" class="btn btn-secondary">📥 Importa JSON Locale</button>
-<button id="emergencyBtn" class="btn btn-secondary">🚨 Import Emergenza Server</button>
-<button id="exportJsonBtn" class="btn btn-secondary">📤 Esporta JSON</button>
 <button id="undoBtn" class="btn btn-danger">↩ Undo Ultimo Movimento</button>
+<button id="exportJsonBtn" class="btn btn-secondary">📤 Esporta JSON</button>
 
 <hr style="border-color: var(--border-color); margin: 4px 0;">
-
 <div style="font-size:12px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">🗑️ Cestino Scarpe</div>
 <div id="trash-list" style="max-height:150px; overflow-y:auto; margin-top:6px;">
 <div style="font-size:11px; color:var(--text-muted);">Cestino vuoto.</div>
@@ -533,24 +385,10 @@ gap: 8px;
 </div>
 </div>
 
-<!-- Modal JSON -->
-<div id="jsonModal" class="modal-overlay">
-<div class="modal-box">
-<div style="font-size: 16px; font-weight: 800; margin-bottom: 14px;">Importa Backup JSON</div>
-<div class="field-group">
-<textarea id="mJsonText" rows="6" placeholder="Incolla il codice JSON qui..."></textarea>
-</div>
-<div style="display:flex; gap:10px; justify-content:flex-end;">
-<button id="closeJsonModalBtn" class="btn btn-secondary">Chiudi</button>
-<button id="processJsonBtn" class="btn">Importa</button>
-</div>
-</div>
-</div>
-
 <div class="container">
 <header>
 <div class="header-left">
-<span id="syncStatus" class="sync-status-badge">PRONTO</span>
+<span id="syncStatus" class="sync-status-badge">CONN...</span>
 </div>
 <div id="headerCenter" class="header-center">
 <img src="https://lh3.googleusercontent.com/d/18hKMBI-uLfVQY7TGoaiHsHG-AER88n0l=s800" alt="Logo" class="header-logo-img">
@@ -613,76 +451,22 @@ function generateUniqueCode() {
 return 'SK-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
-loadConfig();
-loadLocalData();
 updateSubGroupOptions();
-renderAll();
 initEventListeners();
 
 function initEventListeners() {
-const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', toggleDrawer);
-
-const headerCenter = document.getElementById('headerCenter');
-if (headerCenter) headerCenter.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
-
-const appsScriptUrl = document.getElementById('appsScriptUrl');
-if (appsScriptUrl) appsScriptUrl.addEventListener('change', saveConfig);
-
-const syncNowBtn = document.getElementById('syncNowBtn');
-if (syncNowBtn) syncNowBtn.addEventListener('click', manualSyncToServer);
-
-const importSheetBtn = document.getElementById('importSheetBtn');
-if (importSheetBtn) importSheetBtn.addEventListener('click', importFromSheetUrl);
-
-const addShoeBtn = document.getElementById('addShoeBtn');
-if (addShoeBtn) addShoeBtn.addEventListener('click', openAddShoeModal);
-
-const importLocalBtn = document.getElementById('importLocalBtn');
-if (importLocalBtn) importLocalBtn.addEventListener('click', openImportLocalModal);
-
-const emergencyBtn = document.getElementById('emergencyBtn');
-if (emergencyBtn) emergencyBtn.addEventListener('click', openImportEmergencyModal);
-
-const exportJsonBtn = document.getElementById('exportJsonBtn');
-if (exportJsonBtn) exportJsonBtn.addEventListener('click', exportBackupJSON);
-
-const undoBtn = document.getElementById('undoBtn');
-if (undoBtn) undoBtn.addEventListener('click', undoLastLog);
-
-const mShoeMacro = document.getElementById('mShoeMacro');
-if (mShoeMacro) mShoeMacro.addEventListener('change', updateSubGroupOptions);
-
-const closeShoeModalBtn = document.getElementById('closeShoeModalBtn');
-if (closeShoeModalBtn) closeShoeModalBtn.addEventListener('click', closeShoeModal);
-
-const saveShoeBtn = document.getElementById('saveShoeBtn');
-if (saveShoeBtn) saveShoeBtn.addEventListener('click', saveShoeFromModal);
-
-const closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
-if (closeJsonModalBtn) closeJsonModalBtn.addEventListener('click', closeJsonModal);
-
-const processJsonBtn = document.getElementById('processJsonBtn');
-if (processJsonBtn) processJsonBtn.addEventListener('click', processJsonImport);
+document.getElementById('closeDrawerBtn').addEventListener('click', toggleDrawer);
+document.getElementById('headerCenter').addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+document.getElementById('addShoeBtn').addEventListener('click', openAddShoeModal);
+document.getElementById('exportJsonBtn').addEventListener('click', exportBackupJSON);
+document.getElementById('undoBtn').addEventListener('click', undoLastLog);
+document.getElementById('mShoeMacro').addEventListener('change', updateSubGroupOptions);
+document.getElementById('closeShoeModalBtn').addEventListener('click', closeShoeModal);
+document.getElementById('saveShoeBtn').addEventListener('click', saveShoeFromModal);
 }
 
 function toggleDrawer() {
-const drawer = document.getElementById('drawerMenu');
-if (drawer) {
-drawer.classList.toggle('open');
-}
-}
-
-function saveConfig() {
-const url = document.getElementById('appsScriptUrl').value.trim();
-localStorage.setItem('j_sneaker_script_url', url);
-updateStatus("CONFIG SALVATA");
-}
-
-function loadConfig() {
-const url = localStorage.getItem('j_sneaker_script_url') || '';
-const el = document.getElementById('appsScriptUrl');
-if (el) el.value = url;
+document.getElementById('drawerMenu').classList.toggle('open');
 }
 
 function updateStatus(msg) {
@@ -690,61 +474,14 @@ const badge = document.getElementById('syncStatus');
 if (badge) badge.innerText = msg;
 }
 
-function saveLocalData() {
-localStorage.setItem('j_sneaker_shoes_v10', JSON.stringify(shoes));
-localStorage.setItem('j_sneaker_logs_v10', JSON.stringify(logs));
-localStorage.setItem('j_sneaker_trash_v10', JSON.stringify(trash));
+function saveData() {
+if (typeof window.syncToFirebase === 'function') {
+  window.syncToFirebase(shoes, logs, trash);
 }
-
-function loadLocalData() {
-const localShoes = localStorage.getItem('j_sneaker_shoes_v10');
-const localLogs = localStorage.getItem('j_sneaker_logs_v10');
-const localTrash = localStorage.getItem('j_sneaker_trash_v10');
-if (localShoes) shoes = JSON.parse(localShoes);
-if (localLogs) logs = JSON.parse(localLogs);
-if (localTrash) trash = JSON.parse(localTrash);
 }
 
 function getYearUsages(shoeCode) {
 return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + currentYear)).length;
-}
-
-async function syncToServer() {
-const scriptUrl = localStorage.getItem('j_sneaker_script_url');
-if (!scriptUrl) { updateStatus("MODO LOCALE"); return; }
-updateStatus("SYNC...");
-try {
-await fetch(scriptUrl, {
-method: "POST",
-mode: "no-cors",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
-});
-updateStatus("ONLINE [OK]");
-} catch(e) {
-updateStatus("ERR SYNC");
-}
-}
-
-async function manualSyncToServer() {
-const scriptUrl = document.getElementById('appsScriptUrl').value.trim();
-if (!scriptUrl) { alert("Inserisci prima l'URL Google Apps Script."); return; }
-localStorage.setItem('j_sneaker_script_url', scriptUrl);
-updateStatus("TRASCRIZIONE...");
-try {
-await fetch(scriptUrl, {
-method: "POST",
-mode: "no-cors",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
-});
-updateStatus("ONLINE [OK]");
-alert("Dati trascritti su Google Fogli con successo!");
-toggleDrawer();
-} catch(e) {
-updateStatus("ERR SYNC");
-alert("Errore durante la trascrizione sul foglio.");
-}
 }
 
 function updateSubGroupOptions() {
@@ -765,9 +502,8 @@ if (!shoe) return;
 const newGoal = prompt("Nuovo obiettivo utilizzi per " + shoe.name, shoe.goal);
 if (newGoal !== null && !isNaN(newGoal) && newGoal.trim() !== "") {
 shoe.goal = parseInt(newGoal, 10);
-saveLocalData();
 renderAll();
-syncToServer();
+saveData();
 }
 };
 
@@ -779,9 +515,8 @@ shoe.lastUsed = new Date().toLocaleDateString('it-IT');
 const nowStr = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
 logs.unshift({ date: nowStr, shoeCode: shoe.code, shoeName: shoe.name, macro: shoe.macro });
 if (logs.length > 50) logs.pop();
-saveLocalData();
 renderAll();
-syncToServer();
+saveData();
 };
 
 window.decreaseUsage = function(code) {
@@ -790,9 +525,8 @@ if (!shoe || shoe.usages <= 0) return;
 shoe.usages -= 1;
 const logIdx = logs.findIndex(l => l.shoeCode === shoe.code);
 if (logIdx !== -1) logs.splice(logIdx, 1);
-saveLocalData();
 renderAll();
-syncToServer();
+saveData();
 };
 
 function undoLastLog() {
@@ -800,9 +534,8 @@ if (logs.length === 0) { alert("Nessun movimento recente."); return; }
 const last = logs.shift();
 const shoe = shoes.find(s => s.code === last.shoeCode);
 if (shoe && shoe.usages > 0) shoe.usages -= 1;
-saveLocalData();
 renderAll();
-syncToServer();
+saveData();
 alert("Ultimo movimento annullato!");
 }
 
@@ -812,9 +545,8 @@ if (!shoe) return;
 if (confirm("Spostare '" + shoe.name + "' nel cestino?")) {
 trash.push(shoe);
 shoes = shoes.filter(s => s.code !== code);
-saveLocalData();
 renderAll();
-syncToServer();
+saveData();
 }
 };
 
@@ -823,9 +555,8 @@ const shoe = trash.find(s => s.code === code);
 if (!shoe) return;
 shoes.push(shoe);
 trash = trash.filter(s => s.code !== code);
-saveLocalData();
 renderAll();
-syncToServer();
+saveData();
 }
 
 function renderAll() {
@@ -937,78 +668,16 @@ const macro = document.getElementById('mShoeMacro').value;
 const sub = document.getElementById('mShoeSub').value;
 if (!name) { alert("Inserisci un nome."); return; }
 shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
-saveLocalData(); renderAll(); syncToServer(); closeShoeModal(); toggleDrawer();
-}
-
-function importFromSheetUrl() {
-const urlInput = document.getElementById('importSheetUrl');
-const url = urlInput.value.trim();
-const match = url.match(/\/d\/([a-zA-Z0-9-_]+)\//);
-if (!match) { alert("URL Google Fogli non valido."); return; }
-updateStatus("IMPORT...");
-let oldScript = document.getElementById('gvizImportScript');
-if (oldScript) oldScript.remove();
-let script = document.createElement('script');
-script.id = 'gvizImportScript';
-script.src = "https://docs.google.com/spreadsheets/d/" + match[1] + "/gviz/tq?headers=0&tqx=responseHandler:handleSheetImport";
-document.body.appendChild(script);
-urlInput.value = '';
-}
-
-window.handleSheetImport = function(response) {
-if (response && response.status === 'ok') {
-shoes = [];
-response.table.rows.forEach((row) => {
-if (row && row.c) {
-let getVal = (idx) => (!row.c[idx] || row.c[idx].v === null) ? '' : String(row.c[idx].f || row.c[idx].v || '').trim();
-let name = getVal(0);
-if (!name || name.toLowerCase() === 'nome') return;
-let goal = parseInt(getVal(1), 10) || 30;
-let macroRaw = getVal(2).toLowerCase();
-let subRaw = getVal(3).toLowerCase();
-
-let macro = macroRaw.includes('collezione') ? 'collezione' : 'uso comune';
-let sub = subRaw ? subRaw : 'casual';
-
-shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
-}
-});
-saveLocalData(); renderAll(); syncToServer();
-alert("Importate " + shoes.length + " scarpe correttamente!");
+renderAll();
+saveData();
+closeShoeModal();
 toggleDrawer();
-}
-};
-
-function openImportLocalModal() { document.getElementById('jsonModal').style.display = 'flex'; }
-function closeJsonModal() { document.getElementById('jsonModal').style.display = 'none'; }
-function processJsonImport() {
-try {
-const data = JSON.parse(document.getElementById('mJsonText').value.trim());
-if (data && data.state) {
-for (let name in data.state) {
-let ex = shoes.find(s => s.name.toLowerCase() === name.toLowerCase());
-if (ex) ex.usages = data.state[name].usages;
-else shoes.push({ code: generateUniqueCode(), name: name, goal: 30, usages: data.state[name].usages, macro: 'uso comune', sub: 'casual' });
-}
-saveLocalData(); renderAll(); syncToServer(); closeJsonModal(); toggleDrawer(); alert("Importato!");
-}
-} catch(e) { alert("JSON non valido."); }
 }
 
 function exportBackupJSON() {
 let exp = { state: {}, history: logs };
 shoes.forEach(s => { exp.state[s.name] = { usages: s.usages }; });
 navigator.clipboard.writeText(JSON.stringify(exp, null, 2)).then(() => alert("Copiato negli appunti!"));
-}
-
-async function openImportEmergencyModal() {
-const url = localStorage.getItem('j_sneaker_script_url');
-if (!url) { alert("Manca URL script."); return; }
-try {
-const res = await fetch(url + "?action=GET_ALL");
-const data = await res.json();
-if (data && data.shoes) { shoes = data.shoes; logs = data.logs || []; saveLocalData(); renderAll(); toggleDrawer(); alert("Ripristinato!"); }
-} catch(e) { alert("Errore recupero."); }
 }
 </script>
 </body>
