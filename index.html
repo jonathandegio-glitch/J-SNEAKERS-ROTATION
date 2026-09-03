@@ -603,6 +603,8 @@ gap: 8px;
 </div>
 
 <script>
+const FIREBASE_URL = "https://j-sneaker-rotation-default-rtdb.europe-west1.firebasedatabase.app/";
+
 let shoes = [];
 let logs = [];
 let trash = [];
@@ -617,6 +619,7 @@ loadLocalData();
 updateSubGroupOptions();
 renderAll();
 initEventListeners();
+loadFromFirebase();
 
 function initEventListeners() {
 const closeDrawerBtn = document.getElementById('closeDrawerBtn');
@@ -705,18 +708,61 @@ function getYearUsages(shoeCode) {
 return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + currentYear)).length;
 }
 
-async function syncToServer() {
-const scriptUrl = localStorage.getItem('j_sneaker_script_url');
-if (!scriptUrl) { updateStatus("MODO LOCALE"); return; }
+async function loadFromFirebase() {
 updateStatus("SYNC...");
 try {
-await fetch(scriptUrl, {
+const response = await fetch(FIREBASE_URL + "data.json");
+if (response.ok) {
+const data = await response.json();
+if (data) {
+if (data.shoes) shoes = data.shoes;
+if (data.logs) logs = data.logs;
+if (data.trash) trash = data.trash;
+saveLocalData();
+renderAll();
+}
+updateStatus("ONLINE [OK]");
+} else {
+updateStatus("ERR SYNC");
+}
+} catch(e) {
+updateStatus("ERR SYNC");
+}
+}
+
+async function syncToServer() {
+updateStatus("SYNC...");
+const payload = {
+shoes: shoes,
+logs: logs,
+trash: trash
+};
+
+// Sincronizzazione con Google Apps Script (se inserito l'URL)
+const scriptUrl = localStorage.getItem('j_sneaker_script_url');
+if (scriptUrl) {
+try {
+fetch(scriptUrl, {
 method: "POST",
 mode: "no-cors",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
 });
+} catch(e) {}
+}
+
+// Sincronizzazione principale su Firebase Realtime Database
+try {
+const response = await fetch(FIREBASE_URL + "data.json", {
+method: "PUT",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(payload)
+});
+if (response.ok) {
 updateStatus("ONLINE [OK]");
+} else {
+updateStatus("ERR SYNC");
+}
 } catch(e) {
 updateStatus("ERR SYNC");
 }
@@ -988,5 +1034,3 @@ if (data && data.shoes) { shoes = data.shoes; logs = data.logs || []; saveLocalD
 </script>
 </body>
 </html>
-
-
