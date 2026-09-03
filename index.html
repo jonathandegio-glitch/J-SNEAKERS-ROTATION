@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>J Sneaker Rotation Tracker v15</title>
+<title>J Sneaker Rotation</title>
 <style>
 :root {
 --bg-color: #0b0f19;
@@ -72,7 +72,7 @@ user-select: none;
 }
 
 .header-logo-img {
-height: 90px;
+height: 115px;
 width: auto;
 max-width: 260px;
 object-fit: contain;
@@ -466,12 +466,58 @@ margin-bottom: 6px;
 gap: 8px;
 }
 </style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBcHvz8Y7kbLtXvxutUS7xgSzb3FQe21dQ",
+  authDomain: "j-sneaker-rotation.firebaseapp.com",
+  databaseURL: "https://j-sneaker-rotation-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "j-sneaker-rotation",
+  storageBucket: "j-sneaker-rotation.firebasestorage.app",
+  messagingSenderId: "754988539366",
+  appId: "1:754988539366:web:653691dea108b565c9ca27",
+  measurementId: "G-9LRK77JQHF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.syncToFirebase = function(sData, lData, tData) {
+  set(ref(db, 'rotationData'), {
+    shoes: sData,
+    logs: lData,
+    trash: tData,
+    lastUpdate: new Date().toISOString()
+  }).then(() => {
+    updateStatus("FIREBASE [OK]");
+  }).catch((err) => {
+    updateStatus("ERR FIREBASE");
+  });
+};
+
+onValue(ref(db, 'rotationData'), (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    if (data.shoes) shoes = data.shoes;
+    if (data.logs) logs = data.logs;
+    if (data.trash) trash = data.trash;
+    saveLocalData();
+    renderAll();
+    updateStatus("ONLINE");
+  } else {
+    window.syncToFirebase(shoes, logs, trash);
+  }
+});
+</script>
 </head>
 <body>
 
 <div id="drawerMenu" class="drawer">
 <div class="drawer-header">
-<h3>Menu & Sync</h3>
+<h3>Menu</h3>
 <button id="closeDrawerBtn" class="close-btn">✕</button>
 </div>
 
@@ -502,7 +548,6 @@ gap: 8px;
 </div>
 </div>
 
-<!-- Modal Aggiungi Scarpa -->
 <div id="shoeModal" class="modal-overlay">
 <div class="modal-box">
 <div style="font-size: 16px; font-weight: 800; margin-bottom: 14px;" id="shoeModalTitle">Aggiungi Scarpa</div>
@@ -532,7 +577,6 @@ gap: 8px;
 </div>
 </div>
 
-<!-- Modal JSON -->
 <div id="jsonModal" class="modal-overlay">
 <div class="modal-box">
 <div style="font-size: 16px; font-weight: 800; margin-bottom: 14px;">Importa Backup JSON</div>
@@ -706,9 +750,11 @@ return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + current
 }
 
 async function syncToServer() {
+if (typeof window.syncToFirebase === 'function') {
+  window.syncToFirebase(shoes, logs, trash);
+}
 const scriptUrl = localStorage.getItem('j_sneaker_script_url');
-if (!scriptUrl) { updateStatus("MODO LOCALE"); return; }
-updateStatus("SYNC...");
+if (!scriptUrl) return;
 try {
 await fetch(scriptUrl, {
 method: "POST",
@@ -716,10 +762,7 @@ mode: "no-cors",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
 });
-updateStatus("ONLINE [OK]");
-} catch(e) {
-updateStatus("ERR SYNC");
-}
+} catch(e) {}
 }
 
 function updateSubGroupOptions() {
@@ -972,7 +1015,7 @@ saveLocalData(); renderAll(); syncToServer(); closeJsonModal(); toggleDrawer(); 
 
 function exportBackupJSON() {
 let exp = { state: {}, history: logs };
-shoes.forEach(s => { exp.state[s.name] = { usages: s.usages }; });
+shoes.forEach(s => { exp.state[s.name] = { usages: s.usages }; };
 navigator.clipboard.writeText(JSON.stringify(exp, null, 2)).then(() => alert("Copiato negli appunti!"));
 }
 
@@ -988,5 +1031,3 @@ if (data && data.shoes) { shoes = data.shoes; logs = data.logs || []; saveLocalD
 </script>
 </body>
 </html>
-
-
