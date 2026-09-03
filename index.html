@@ -478,7 +478,6 @@ gap: 8px;
 <div class="field-group">
 <label>URL Google Apps Script</label>
 <input type="text" id="appsScriptUrl" placeholder="Incolla Web App URL...">
-<button id="syncNowBtn" class="btn btn-secondary" style="margin-top:6px;">☁️ Trascrivi su Google Fogli</button>
 </div>
 
 <div class="field-group">
@@ -629,9 +628,6 @@ if (headerCenter) headerCenter.addEventListener('click', () => window.scrollTo({
 const appsScriptUrl = document.getElementById('appsScriptUrl');
 if (appsScriptUrl) appsScriptUrl.addEventListener('change', saveConfig);
 
-const syncNowBtn = document.getElementById('syncNowBtn');
-if (syncNowBtn) syncNowBtn.addEventListener('click', manualSyncToServer);
-
 const importSheetBtn = document.getElementById('importSheetBtn');
 if (importSheetBtn) importSheetBtn.addEventListener('click', importFromSheetUrl);
 
@@ -723,27 +719,6 @@ body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
 updateStatus("ONLINE [OK]");
 } catch(e) {
 updateStatus("ERR SYNC");
-}
-}
-
-async function manualSyncToServer() {
-const scriptUrl = document.getElementById('appsScriptUrl').value.trim();
-if (!scriptUrl) { alert("Inserisci prima l'URL Google Apps Script."); return; }
-localStorage.setItem('j_sneaker_script_url', scriptUrl);
-updateStatus("TRASCRIZIONE...");
-try {
-await fetch(scriptUrl, {
-method: "POST",
-mode: "no-cors",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
-});
-updateStatus("ONLINE [OK]");
-alert("Dati trascritti su Google Fogli con successo!");
-toggleDrawer();
-} catch(e) {
-updateStatus("ERR SYNC");
-alert("Errore durante la trascrizione sul foglio.");
 }
 }
 
