@@ -37,6 +37,53 @@ padding-bottom: 90px;
 overflow-x: hidden;
 }
 
+/* LOGIN OVERLAY */
+#loginOverlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background: var(--bg-color);
+z-index: 9999999;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+}
+
+.login-card {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-lg);
+padding: 28px 24px;
+width: 100%;
+max-width: 360px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+text-align: center;
+}
+
+.login-card img {
+height: 80px;
+width: auto;
+margin-bottom: 16px;
+}
+
+.login-card h2 {
+font-size: 18px;
+margin-bottom: 20px;
+color: var(--text-main);
+font-weight: 800;
+}
+
+.login-error {
+color: var(--accent-color);
+font-size: 12px;
+margin-top: 10px;
+display: none;
+font-weight: 700;
+}
+
 .container {
 max-width: 800px;
 margin: 0 auto;
@@ -72,7 +119,7 @@ user-select: none;
 }
 
 .header-logo-img {
-height: 125px;
+height: 115px;
 width: auto;
 max-width: 260px;
 object-fit: contain;
@@ -350,6 +397,21 @@ color: var(--accent-blue);
 font-weight: 700;
 }
 
+.percent-badge {
+font-family: monospace;
+background: rgba(255,255,255,0.06);
+padding: 2px 5px;
+border-radius: var(--radius-sm);
+color: var(--accent-orange);
+font-weight: 700;
+}
+
+.percent-badge.completed {
+color: var(--accent-volt);
+background: rgba(16, 185, 129, 0.15);
+border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
 .usage-badge-container {
 display: flex;
 align-items: center;
@@ -469,6 +531,24 @@ gap: 8px;
 </head>
 <body>
 
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+<div class="login-card">
+<img src="https://lh3.googleusercontent.com/d/18hKMBI-uLfVQY7TGoaiHsHG-AER88n0l=s800" alt="Logo">
+<h2>Accesso Riservato</h2>
+<div class="field-group" style="text-align:left;">
+<label>Nome Utente</label>
+<input type="text" id="loginUser" placeholder="Inserisci nome utente...">
+</div>
+<div class="field-group" style="text-align:left;">
+<label>Password</label>
+<input type="password" id="loginPass" placeholder="Inserisci password...">
+</div>
+<button id="loginBtn" class="btn" style="margin-top:10px;">Accedi</button>
+<div id="loginError" class="login-error">Nome utente o password errati!</div>
+</div>
+</div>
+
 <div id="drawerMenu" class="drawer">
 <div class="drawer-header">
 <h3>Menu</h3>
@@ -500,6 +580,10 @@ gap: 8px;
 <div id="trash-list" style="max-height:150px; overflow-y:auto; margin-top:6px;">
 <div style="font-size:11px; color:var(--text-muted);">Cestino vuoto.</div>
 </div>
+
+<hr style="border-color: var(--border-color); margin: 4px 0;">
+
+<button id="logoutBtn" class="btn btn-danger">🚪 Logout</button>
 </div>
 
 <!-- Modal Aggiungi Scarpa -->
@@ -605,25 +689,73 @@ gap: 8px;
 <script>
 const FIREBASE_URL = "https://j-sneaker-rotation-default-rtdb.europe-west1.firebasedatabase.app/";
 
+const AUTH_USER = "JDEGIO28";
+const AUTH_PASS = "Laborracaldafaschiuma2739@";
+
 let shoes = [];
 let logs = [];
 let trash = [];
 const currentYear = new Date().getFullYear();
 
+function checkAuth() {
+if (sessionStorage.getItem('j_sneaker_auth') === 'true') {
+document.getElementById('loginOverlay').style.display = 'none';
+initApp();
+} else {
+document.getElementById('loginOverlay').style.display = 'flex';
+}
+}
+
+function handleLogin() {
+const userIn = document.getElementById('loginUser').value.trim();
+const passIn = document.getElementById('loginPass').value.trim();
+const errEl = document.getElementById('loginError');
+
+if (userIn === AUTH_USER && passIn === AUTH_PASS) {
+sessionStorage.setItem('j_sneaker_auth', 'true');
+document.getElementById('loginOverlay').style.display = 'none';
+errEl.style.display = 'none';
+initApp();
+} else {
+errEl.style.display = 'block';
+}
+}
+
+function handleLogout() {
+sessionStorage.removeItem('j_sneaker_auth');
+location.reload();
+}
+
 function generateUniqueCode() {
 return 'SK-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+document.getElementById('loginBtn').addEventListener('click', handleLogin);
+document.getElementById('loginPass').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('loginUser').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') handleLogin();
+});
+checkAuth();
+});
+
+function initApp() {
 loadConfig();
 loadLocalData();
 updateSubGroupOptions();
 renderAll();
 initEventListeners();
 loadFromFirebase();
+}
 
 function initEventListeners() {
 const closeDrawerBtn = document.getElementById('closeDrawerBtn');
 if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', toggleDrawer);
+
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
 const headerCenter = document.getElementById('headerCenter');
 if (headerCenter) headerCenter.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
@@ -869,6 +1001,11 @@ document.getElementById('count-collezione').innerText = shoes.filter(s => s.macr
 
 function buildShoeCard(shoe) {
 const yearUsages = getYearUsages(shoe.code);
+const goal = shoe.goal || 1;
+const pct = Math.round((shoe.usages / goal) * 100);
+const isCompleted = pct >= 100;
+const pctClass = isCompleted ? "percent-badge completed" : "percent-badge";
+
 return `<div class="shoe-item">
 <div class="shoe-info">
 <div class="shoe-name-text">${shoe.name}</div>
@@ -876,6 +1013,7 @@ return `<div class="shoe-item">
 <span class="code-badge">${shoe.code}</span>
 <span>Anno: <b>${yearUsages}</b></span>
 <span onclick="editGoal('${shoe.code}')" style="cursor:pointer; text-decoration:underline;">Obiettivo: <b>${shoe.goal}</b></span>
+<span class="${pctClass}">${pct}%</span>
 </div>
 </div>
 <div class="usage-badge-container">
