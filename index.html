@@ -739,7 +739,10 @@ async function handleLogin() {
     await signInWithEmailAndPassword(auth, userIn, passIn);
     errEl.style.display = 'none';
   } catch (error) {
+    console.error(error);
+    alert("Errore Firebase: " + error.message);
     errEl.style.display = 'block';
+    errEl.innerText = error.message;
   }
 }
 
@@ -1186,7 +1189,7 @@ function exportBackupJSON() {
 }
 
 async function openImportEmergencyModal() {
-  const url = localStorage.-getItem('j_sneaker_script_url');
+  const url = localStorage.getItem('j_sneaker_script_url');
   if (!url) { alert("Manca URL script."); return; }
   try {
     const res = await fetch(url + "?action=GET_ALL");
@@ -1197,4 +1200,3 @@ async function openImportEmergencyModal() {
 </script>
 </body>
 </html>
-
