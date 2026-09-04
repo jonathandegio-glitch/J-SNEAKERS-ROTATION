@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>J Sneaker Rotation</title>
+<!-- Firebase App SDK & Auth SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  
+  window.firebaseModules = { initializeApp, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+</script>
 <style>
 :root {
 --bg-color: #0b0f19;
@@ -537,15 +544,15 @@ gap: 8px;
 <img src="https://lh3.googleusercontent.com/d/18hKMBI-uLfVQY7TGoaiHsHG-AER88n0l=s800" alt="Logo">
 <h2>Accesso Riservato</h2>
 <div class="field-group" style="text-align:left;">
-<label>Nome Utente</label>
-<input type="text" id="loginUser" placeholder="Inserisci nome utente...">
+<label>Email</label>
+<input type="email" id="loginUser" placeholder="Inserisci email...">
 </div>
 <div class="field-group" style="text-align:left;">
 <label>Password</label>
 <input type="password" id="loginPass" placeholder="Inserisci password...">
 </div>
 <button id="loginBtn" class="btn" style="margin-top:10px;">Accedi</button>
-<div id="loginError" class="login-error">Nome utente o password errati!</div>
+<div id="loginError" class="login-error">Credenziali non valide o errore di accesso!</div>
 </div>
 </div>
 
@@ -689,41 +696,60 @@ gap: 8px;
 <script>
 const FIREBASE_URL = "https://j-sneaker-rotation-default-rtdb.europe-west1.firebasedatabase.app/";
 
-const AUTH_USER = "JDEGIO28";
-const AUTH_PASS = "Laborracaldafaschiuma2739@";
+// Firebase Configuration (sostituisci con le tue credenziali di progetto)
+const firebaseConfig = {
+  databaseURL: FIREBASE_URL
+  // apiKey: "TUA_API_KEY",
+  // authDomain: "TUO_AUTH_DOMAIN",
+  // projectId: "TUO_PROJECT_ID",
+  // storageBucket: "TUO_STORAGE_BUCKET",
+  // messagingSenderId: "TUO_MESSAGING_SENDER_ID",
+  // appId: "TUO_APP_ID"
+};
 
+let auth;
 let shoes = [];
 let logs = [];
 let trash = [];
 const currentYear = new Date().getFullYear();
 
 function checkAuth() {
-if (sessionStorage.getItem('j_sneaker_auth') === 'true') {
-document.getElementById('loginOverlay').style.display = 'none';
-initApp();
-} else {
-document.getElementById('loginOverlay').style.display = 'flex';
-}
+  const { initializeApp, getAuth, onAuthStateChanged } = window.firebaseModules;
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('loginOverlay').style.display = 'none';
+      initApp();
+    } else {
+      document.getElementById('loginOverlay').style.display = 'flex';
+    }
+  });
 }
 
-function handleLogin() {
-const userIn = document.getElementById('loginUser').value.trim();
-const passIn = document.getElementById('loginPass').value.trim();
-const errEl = document.getElementById('loginError');
+async function handleLogin() {
+  const userIn = document.getElementById('loginUser').value.trim();
+  const passIn = document.getElementById('loginPass').value.trim();
+  const errEl = document.getElementById('loginError');
 
-if (userIn === AUTH_USER && passIn === AUTH_PASS) {
-sessionStorage.setItem('j_sneaker_auth', 'true');
-document.getElementById('loginOverlay').style.display = 'none';
-errEl.style.display = 'none';
-initApp();
-} else {
-errEl.style.display = 'block';
-}
+  try {
+    const { signInWithEmailAndPassword } = window.firebaseModules;
+    await signInWithEmailAndPassword(auth, userIn, passIn);
+    errEl.style.display = 'none';
+  } catch (error) {
+    errEl.style.display = 'block';
+  }
 }
 
-function handleLogout() {
-sessionStorage.removeItem('j_sneaker_auth');
-location.reload();
+async function handleLogout() {
+  try {
+    const { signOut } = window.firebaseModules;
+    await signOut(auth);
+    location.reload();
+  } catch(e) {
+    location.reload();
+  }
 }
 
 function generateUniqueCode() {
@@ -1172,3 +1198,4 @@ if (data && data.shoes) { shoes = data.shoes; logs = data.logs || []; saveLocalD
 </script>
 </body>
 </html>
+
