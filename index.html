@@ -341,14 +341,6 @@ gap: 6px;
 align-items: center;
 flex-wrap: wrap;
 }
-.code-badge {
-font-family: monospace;
-background: rgba(255,255,255,0.06);
-padding: 2px 5px;
-border-radius: var(--radius-sm);
-color: var(--accent-blue);
-font-weight: 700;
-}
 .percent-badge {
 font-family: monospace;
 background: rgba(255,255,255,0.06);
@@ -361,6 +353,11 @@ font-weight: 700;
 color: var(--accent-volt);
 background: rgba(16, 185, 129, 0.15);
 border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.last-used-text {
+font-size: 9px;
+color: var(--text-muted);
+font-style: italic;
 }
 .usage-badge-container {
 display: flex;
@@ -924,14 +921,16 @@ const goal = shoe.goal || 1;
 const pct = Math.round((shoe.usages / goal) * 100);
 const isCompleted = pct >= 100;
 const pctClass = isCompleted ? "percent-badge completed" : "percent-badge";
+const lastUsedStr = shoe.lastUsed ? shoe.lastUsed : 'Mai';
+
 return `<div class="shoe-item">
 <div class="shoe-info">
 <div class="shoe-name-text">${shoe.name}</div>
 <div class="shoe-meta">
-<span class="code-badge">${shoe.code}</span>
 <span>Anno: <b>${yearUsages}</b></span>
 <span onclick="editGoal('${shoe.code}')" style="cursor:pointer; text-decoration:underline;">Obiettivo: <b>${shoe.goal}</b></span>
 <span class="${pctClass}">${pct}%</span>
+<span class="last-used-text">Ultimo uso: <b>${lastUsedStr}</b></span>
 </div>
 </div>
 <div class="usage-badge-container">
