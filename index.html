@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>J Sneaker Rotation</title>
-<!-- Firebase App SDK & Auth SDK -->
+
+<!-- Firebase SDKs (App & Auth) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   
   window.firebaseModules = { initializeApp, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
 </script>
+
 <style>
 :root {
 --bg-color: #0b0f19;
@@ -696,9 +698,8 @@ gap: 8px;
 <script>
 const FIREBASE_URL = "https://j-sneaker-rotation-default-rtdb.europe-west1.firebasedatabase.app/";
 
-// Firebase Configuration completa inserita
 const firebaseConfig = {
-  apiKey: "AIzaSyD... (inserisci la tua apiKey completa)",
+  apiKey: "INSERISCI_LA_TUA_API_KEY",
   authDomain: "j-sneaker-rotation.firebaseapp.com",
   databaseURL: FIREBASE_URL,
   projectId: "j-sneaker-rotation",
@@ -753,447 +754,445 @@ async function handleLogout() {
 }
 
 function generateUniqueCode() {
-return 'SK-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+  return 'SK-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-document.getElementById('loginBtn').addEventListener('click', handleLogin);
-document.getElementById('loginPass').addEventListener('keypress', (e) => {
-if (e.key === 'Enter') handleLogin();
-});
-document.getElementById('loginUser').addEventListener('keypress', (e) => {
-if (e.key === 'Enter') handleLogin();
-});
-checkAuth();
+  document.getElementById('loginBtn').addEventListener('click', handleLogin);
+  document.getElementById('loginPass').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleLogin();
+  });
+  document.getElementById('loginUser').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleLogin();
+  });
+  checkAuth();
 });
 
 function initApp() {
-loadConfig();
-loadLocalData();
-updateSubGroupOptions();
-renderAll();
-initEventListeners();
-loadFromFirebase();
+  loadConfig();
+  loadLocalData();
+  updateSubGroupOptions();
+  renderAll();
+  initEventListeners();
+  loadFromFirebase();
 }
 
 function initEventListeners() {
-const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', toggleDrawer);
+  const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+  if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', toggleDrawer);
 
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
 
-const headerCenter = document.getElementById('headerCenter');
-if (headerCenter) headerCenter.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+  const headerCenter = document.getElementById('headerCenter');
+  if (headerCenter) headerCenter.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
 
-const appsScriptUrl = document.getElementById('appsScriptUrl');
-if (appsScriptUrl) appsScriptUrl.addEventListener('change', saveConfig);
+  const appsScriptUrl = document.getElementById('appsScriptUrl');
+  if (appsScriptUrl) appsScriptUrl.addEventListener('change', saveConfig);
 
-const importSheetBtn = document.getElementById('importSheetBtn');
-if (importSheetBtn) importSheetBtn.addEventListener('click', importFromSheetUrl);
+  const importSheetBtn = document.getElementById('importSheetBtn');
+  if (importSheetBtn) importSheetBtn.addEventListener('click', importFromSheetUrl);
 
-const addShoeBtn = document.getElementById('addShoeBtn');
-if (addShoeBtn) addShoeBtn.addEventListener('click', openAddShoeModal);
+  const addShoeBtn = document.getElementById('addShoeBtn');
+  if (addShoeBtn) addShoeBtn.addEventListener('click', openAddShoeModal);
 
-const importLocalBtn = document.getElementById('importLocalBtn');
-if (importLocalBtn) importLocalBtn.addEventListener('click', openImportLocalModal);
+  const importLocalBtn = document.getElementById('importLocalBtn');
+  if (importLocalBtn) importLocalBtn.addEventListener('click', openImportLocalModal);
 
-const emergencyBtn = document.getElementById('emergencyBtn');
-if (emergencyBtn) emergencyBtn.addEventListener('click', openImportEmergencyModal);
+  const emergencyBtn = document.getElementById('emergencyBtn');
+  if (emergencyBtn) emergencyBtn.addEventListener('click', openImportEmergencyModal);
 
-const exportJsonBtn = document.getElementById('exportJsonBtn');
-if (exportJsonBtn) exportJsonBtn.addEventListener('click', exportBackupJSON);
+  const exportJsonBtn = document.getElementById('exportJsonBtn');
+  if (exportJsonBtn) exportJsonBtn.addEventListener('click', exportBackupJSON);
 
-const undoBtn = document.getElementById('undoBtn');
-if (undoBtn) undoBtn.addEventListener('click', undoLastLog);
+  const undoBtn = document.getElementById('undoBtn');
+  if (undoBtn) undoBtn.addEventListener('click', undoLastLog);
 
-const mShoeMacro = document.getElementById('mShoeMacro');
-if (mShoeMacro) mShoeMacro.addEventListener('change', updateSubGroupOptions);
+  const mShoeMacro = document.getElementById('mShoeMacro');
+  if (mShoeMacro) mShoeMacro.addEventListener('change', updateSubGroupOptions);
 
-const closeShoeModalBtn = document.getElementById('closeShoeModalBtn');
-if (closeShoeModalBtn) closeShoeModalBtn.addEventListener('click', closeShoeModal);
+  const closeShoeModalBtn = document.getElementById('closeShoeModalBtn');
+  if (closeShoeModalBtn) closeShoeModalBtn.addEventListener('click', closeShoeModal);
 
-const saveShoeBtn = document.getElementById('saveShoeBtn');
-if (saveShoeBtn) saveShoeBtn.addEventListener('click', saveShoeFromModal);
+  const saveShoeBtn = document.getElementById('saveShoeBtn');
+  if (saveShoeBtn) saveShoeBtn.addEventListener('click', saveShoeFromModal);
 
-const closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
-if (closeJsonModalBtn) closeJsonModalBtn.addEventListener('click', closeJsonModal);
+  const closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
+  if (closeJsonModalBtn) closeJsonModalBtn.addEventListener('click', closeJsonModal);
 
-const processJsonBtn = document.getElementById('processJsonBtn');
-if (processJsonBtn) processJsonBtn.addEventListener('click', processJsonImport);
+  const processJsonBtn = document.getElementById('processJsonBtn');
+  if (processJsonBtn) processJsonBtn.addEventListener('click', processJsonImport);
 }
 
 function toggleDrawer() {
-const drawer = document.getElementById('drawerMenu');
-if (drawer) {
-drawer.classList.toggle('open');
-}
+  const drawer = document.getElementById('drawerMenu');
+  if (drawer) {
+    drawer.classList.toggle('open');
+  }
 }
 
 function saveConfig() {
-const url = document.getElementById('appsScriptUrl').value.trim();
-localStorage.setItem('j_sneaker_script_url', url);
-updateStatus("CONFIG SALVATA");
+  const url = document.getElementById('appsScriptUrl').value.trim();
+  localStorage.setItem('j_sneaker_script_url', url);
+  updateStatus("CONFIG SALVATA");
 }
 
 function loadConfig() {
-const url = localStorage.getItem('j_sneaker_script_url') || '';
-const el = document.getElementById('appsScriptUrl');
-if (el) el.value = url;
+  const url = localStorage.getItem('j_sneaker_script_url') || '';
+  const el = document.getElementById('appsScriptUrl');
+  if (el) el.value = url;
 }
 
 function updateStatus(msg) {
-const badge = document.getElementById('syncStatus');
-if (badge) badge.innerText = msg;
+  const badge = document.getElementById('syncStatus');
+  if (badge) badge.innerText = msg;
 }
 
 function saveLocalData() {
-localStorage.setItem('j_sneaker_shoes_v10', JSON.stringify(shoes));
-localStorage.setItem('j_sneaker_logs_v10', JSON.stringify(logs));
-localStorage.setItem('j_sneaker_trash_v10', JSON.stringify(trash));
+  localStorage.setItem('j_sneaker_shoes_v10', JSON.stringify(shoes));
+  localStorage.setItem('j_sneaker_logs_v10', JSON.stringify(logs));
+  localStorage.setItem('j_sneaker_trash_v10', JSON.stringify(trash));
 }
 
 function loadLocalData() {
-const localShoes = localStorage.getItem('j_sneaker_shoes_v10');
-const localLogs = localStorage.getItem('j_sneaker_logs_v10');
-const localTrash = localStorage.getItem('j_sneaker_trash_v10');
-if (localShoes) shoes = JSON.parse(localShoes);
-if (localLogs) logs = JSON.parse(localLogs);
-if (localTrash) trash = JSON.parse(localTrash);
+  const localShoes = localStorage.getItem('j_sneaker_shoes_v10');
+  const localLogs = localStorage.getItem('j_sneaker_logs_v10');
+  const localTrash = localStorage.getItem('j_sneaker_trash_v10');
+  if (localShoes) shoes = JSON.parse(localShoes);
+  if (localLogs) logs = JSON.parse(localLogs);
+  if (localTrash) trash = JSON.parse(localTrash);
 }
 
 function getYearUsages(shoeCode) {
-return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + currentYear)).length;
+  return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + currentYear)).length;
 }
 
 async function loadFromFirebase() {
-updateStatus("SYNC...");
-try {
-const response = await fetch(FIREBASE_URL + "data.json");
-if (response.ok) {
-const data = await response.json();
-if (data) {
-if (data.shoes) shoes = data.shoes;
-if (data.logs) logs = data.logs;
-if (data.trash) trash = data.trash;
-saveLocalData();
-renderAll();
-}
-updateStatus("ONLINE");
-} else {
-updateStatus("ERR SYNC");
-}
-} catch(e) {
-updateStatus("ERR SYNC");
-}
+  updateStatus("SYNC...");
+  try {
+    const response = await fetch(FIREBASE_URL + "data.json");
+    if (response.ok) {
+      const data = await response.json();
+      if (data) {
+        if (data.shoes) shoes = data.shoes;
+        if (data.logs) logs = data.logs;
+        if (data.trash) trash = data.trash;
+        saveLocalData();
+        renderAll();
+      }
+      updateStatus("ONLINE");
+    } else {
+      updateStatus("ERR SYNC");
+    }
+  } catch(e) {
+    updateStatus("ERR SYNC");
+  }
 }
 
 async function syncToServer() {
-updateStatus("SYNC...");
-const payload = {
-shoes: shoes,
-logs: logs,
-trash: trash
-};
+  updateStatus("SYNC...");
+  const payload = {
+    shoes: shoes,
+    logs: logs,
+    trash: trash
+  };
 
-// Sincronizzazione con Google Apps Script (se inserito l'URL)
-const scriptUrl = localStorage.getItem('j_sneaker_script_url');
-if (scriptUrl) {
-try {
-fetch(scriptUrl, {
-method: "POST",
-mode: "no-cors",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
-});
-} catch(e) {}
-}
+  const scriptUrl = localStorage.getItem('j_sneaker_script_url');
+  if (scriptUrl) {
+    try {
+      fetch(scriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
+      });
+    } catch(e) {}
+  }
 
-// Sincronizzazione principale su Firebase Realtime Database
-try {
-const response = await fetch(FIREBASE_URL + "data.json", {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify(payload)
-});
-if (response.ok) {
-updateStatus("ONLINE");
-} else {
-updateStatus("ERR SYNC");
-}
-} catch(e) {
-updateStatus("ERR SYNC");
-}
+  try {
+    const response = await fetch(FIREBASE_URL + "data.json", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (response.ok) {
+      updateStatus("ONLINE");
+    } else {
+      updateStatus("ERR SYNC");
+    }
+  } catch(e) {
+    updateStatus("ERR SYNC");
+  }
 }
 
 function updateSubGroupOptions() {
-const macro = document.getElementById('mShoeMacro').value;
-const subSelect = document.getElementById('mShoeSub');
-if (!subSelect) return;
-subSelect.innerHTML = '';
-if (macro === 'collezione') {
-subSelect.innerHTML = '<option value="yeezy">Adidas & Yeezy</option><option value="jordanike">Jordan & Nike</option><option value="altro">Altro Collezione</option>';
-} else {
-subSelect.innerHTML = '<option value="lavoro">Lavoro / Quotidiano</option><option value="palestra">Palestra / Sport</option><option value="outdoor">Outdoor / Stivali</option><option value="casual">Casual / Libero</option><option value="misto">Misto</option><option value="sport">Sport</option><option value="uscite">Uscite</option>';
-}
+  const macro = document.getElementById('mShoeMacro').value;
+  const subSelect = document.getElementById('mShoeSub');
+  if (!subSelect) return;
+  subSelect.innerHTML = '';
+  if (macro === 'collezione') {
+    subSelect.innerHTML = '<option value="yeezy">Adidas & Yeezy</option><option value="jordanike">Jordan & Nike</option><option value="altro">Altro Collezione</option>';
+  } else {
+    subSelect.innerHTML = '<option value="lavoro">Lavoro / Quotidiano</option><option value="palestra">Palestra / Sport</option><option value="outdoor">Outdoor / Stivali</option><option value="casual">Casual / Libero</option><option value="misto">Misto</option><option value="sport">Sport</option><option value="uscite">Uscite</option>';
+  }
 }
 
 window.editGoal = function(code) {
-const shoe = shoes.find(s => s.code === code);
-if (!shoe) return;
-const newGoal = prompt("Nuovo obiettivo utilizzi per " + shoe.name, shoe.goal);
-if (newGoal !== null && !isNaN(newGoal) && newGoal.trim() !== "") {
-shoe.goal = parseInt(newGoal, 10);
-saveLocalData();
-renderAll();
-syncToServer();
-}
+  const shoe = shoes.find(s => s.code === code);
+  if (!shoe) return;
+  const newGoal = prompt("Nuovo obiettivo utilizzi per " + shoe.name, shoe.goal);
+  if (newGoal !== null && !isNaN(newGoal) && newGoal.trim() !== "") {
+    shoe.goal = parseInt(newGoal, 10);
+    saveLocalData();
+    renderAll();
+    syncToServer();
+  }
 };
 
 window.recordUsage = function(code) {
-const shoe = shoes.find(s => s.code === code);
-if (!shoe) return;
-shoe.usages += 1;
-shoe.lastUsed = new Date().toLocaleDateString('it-IT');
-const nowStr = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-logs.unshift({ date: nowStr, shoeCode: shoe.code, shoeName: shoe.name, macro: shoe.macro });
-if (logs.length > 50) logs.pop();
-saveLocalData();
-renderAll();
-syncToServer();
+  const shoe = shoes.find(s => s.code === code);
+  if (!shoe) return;
+  shoe.usages += 1;
+  shoe.lastUsed = new Date().toLocaleDateString('it-IT');
+  const nowStr = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
+  logs.unshift({ date: nowStr, shoeCode: shoe.code, shoeName: shoe.name, macro: shoe.macro });
+  if (logs.length > 50) logs.pop();
+  saveLocalData();
+  renderAll();
+  syncToServer();
 };
 
 window.decreaseUsage = function(code) {
-const shoe = shoes.find(s => s.code === code);
-if (!shoe || shoe.usages <= 0) return;
-shoe.usages -= 1;
-const logIdx = logs.findIndex(l => l.shoeCode === shoe.code);
-if (logIdx !== -1) logs.splice(logIdx, 1);
-saveLocalData();
-renderAll();
-syncToServer();
+  const shoe = shoes.find(s => s.code === code);
+  if (!shoe || shoe.usages <= 0) return;
+  shoe.usages -= 1;
+  const logIdx = logs.findIndex(l => l.shoeCode === shoe.code);
+  if (logIdx !== -1) logs.splice(logIdx, 1);
+  saveLocalData();
+  renderAll();
+  syncToServer();
 };
 
 function undoLastLog() {
-if (logs.length === 0) { alert("Nessun movimento recente."); return; }
-const last = logs.shift();
-const shoe = shoes.find(s => s.code === last.shoeCode);
-if (shoe && shoe.usages > 0) shoe.usages -= 1;
-saveLocalData();
-renderAll();
-syncToServer();
-alert("Ultimo movimento annullato!");
+  if (logs.length === 0) { alert("Nessun movimento recente."); return; }
+  const last = logs.shift();
+  const shoe = shoes.find(s => s.code === last.shoeCode);
+  if (shoe && shoe.usages > 0) shoe.usages -= 1;
+  saveLocalData();
+  renderAll();
+  syncToServer();
+  alert("Ultimo movimento annullato!");
 }
 
 window.deleteShoe = function(code) {
-const shoe = shoes.find(s => s.code === code);
-if (!shoe) return;
-if (confirm("Spostare '" + shoe.name + "' nel cestino?")) {
-trash.push(shoe);
-shoes = shoes.filter(s => s.code !== code);
-saveLocalData();
-renderAll();
-syncToServer();
-}
+  const shoe = shoes.find(s => s.code === code);
+  if (!shoe) return;
+  if (confirm("Spostare '" + shoe.name + "' nel cestino?")) {
+    trash.push(shoe);
+    shoes = shoes.filter(s => s.code !== code);
+    saveLocalData();
+    renderAll();
+    syncToServer();
+  }
 };
 
 window.restoreShoe = function(code) {
-const shoe = trash.find(s => s.code === code);
-if (!shoe) return;
-shoes.push(shoe);
-trash = trash.filter(s => s.code !== code);
-saveLocalData();
-renderAll();
-syncToServer();
+  const shoe = trash.find(s => s.code === code);
+  if (!shoe) return;
+  shoes.push(shoe);
+  trash = trash.filter(s => s.code !== code);
+  saveLocalData();
+  renderAll();
+  syncToServer();
 }
 
 function renderAll() {
-updateStats();
-renderLists();
-renderTrash();
+  updateStats();
+  renderLists();
+  renderTrash();
 }
 
 function updateStats() {
-document.getElementById('stat-comune').innerText = shoes.filter(s => s.macro === 'uso comune').length;
-document.getElementById('stat-collezione').innerText = shoes.filter(s => s.macro === 'collezione').length;
-let yearTotal = 0;
-shoes.forEach(s => { yearTotal += getYearUsages(s.code); });
-document.getElementById('stat-year').innerText = yearTotal;
-let completed = shoes.filter(s => s.goal > 0 && s.usages >= s.goal).length;
-document.getElementById('stat-completed').innerText = completed;
-document.getElementById('count-comune').innerText = shoes.filter(s => s.macro === 'uso comune').length + " PAIA";
-document.getElementById('count-collezione').innerText = shoes.filter(s => s.macro === 'collezione').length + " PAIA";
+  document.getElementById('stat-comune').innerText = shoes.filter(s => s.macro === 'uso comune').length;
+  document.getElementById('stat-collezione').innerText = shoes.filter(s => s.macro === 'collezione').length;
+  let yearTotal = 0;
+  shoes.forEach(s => { yearTotal += getYearUsages(s.code); });
+  document.getElementById('stat-year').innerText = yearTotal;
+  let completed = shoes.filter(s => s.goal > 0 && s.usages >= s.goal).length;
+  document.getElementById('stat-completed').innerText = completed;
+  document.getElementById('count-comune').innerText = shoes.filter(s => s.macro === 'uso comune').length + " PAIA";
+  document.getElementById('count-collezione').innerText = shoes.filter(s => s.macro === 'collezione').length + " PAIA";
 }
 
 function buildShoeCard(shoe) {
-const yearUsages = getYearUsages(shoe.code);
-const goal = shoe.goal || 1;
-const pct = Math.round((shoe.usages / goal) * 100);
-const isCompleted = pct >= 100;
-const pctClass = isCompleted ? "percent-badge completed" : "percent-badge";
+  const yearUsages = getYearUsages(shoe.code);
+  const goal = shoe.goal || 1;
+  const pct = Math.round((shoe.usages / goal) * 100);
+  const isCompleted = pct >= 100;
+  const pctClass = isCompleted ? "percent-badge completed" : "percent-badge";
 
-return `<div class="shoe-item">
-<div class="shoe-info">
-<div class="shoe-name-text">${shoe.name}</div>
-<div class="shoe-meta">
-<span class="code-badge">${shoe.code}</span>
-<span>Anno: <b>${yearUsages}</b></span>
-<span onclick="editGoal('${shoe.code}')" style="cursor:pointer; text-decoration:underline;">Obiettivo: <b>${shoe.goal}</b></span>
-<span class="${pctClass}">${pct}%</span>
-</div>
-</div>
-<div class="usage-badge-container">
-<button class="counter-btn minus" onclick="decreaseUsage('${shoe.code}')">-</button>
-<span class="usage-counter">${shoe.usages}</span>
-<button class="counter-btn" onclick="recordUsage('${shoe.code}')">+</button>
-<span class="delete-icon" onclick="deleteShoe('${shoe.code}')">🗑️</span>
-</div>
-</div>`;
+  return `<div class="shoe-item">
+  <div class="shoe-info">
+  <div class="shoe-name-text">${shoe.name}</div>
+  <div class="shoe-meta">
+  <span class="code-badge">${shoe.code}</span>
+  <span>Anno: <b>${yearUsages}</b></span>
+  <span onclick="editGoal('${shoe.code}')" style="cursor:pointer; text-decoration:underline;">Obiettivo: <b>${shoe.goal}</b></span>
+  <span class="${pctClass}">${pct}%</span>
+  </div>
+  </div>
+  <div class="usage-badge-container">
+  <button class="counter-btn minus" onclick="decreaseUsage('${shoe.code}')">-</button>
+  <span class="usage-counter">${shoe.usages}</span>
+  <button class="counter-btn" onclick="recordUsage('${shoe.code}')">+</button>
+  <span class="delete-icon" onclick="deleteShoe('${shoe.code}')">🗑️</span>
+  </div>
+  </div>`;
 }
 
 function renderLists() {
-const listComune = document.getElementById('list-comune');
-const listCollezione = document.getElementById('list-collezione');
-const logList = document.getElementById('log-list');
-if(!listComune || !listCollezione || !logList) return;
+  const listComune = document.getElementById('list-comune');
+  const listCollezione = document.getElementById('list-collezione');
+  const logList = document.getElementById('log-list');
+  if(!listComune || !listCollezione || !logList) return;
 
-listComune.innerHTML = '';
-listCollezione.innerHTML = '';
-logList.innerHTML = '';
+  listComune.innerHTML = '';
+  listCollezione.innerHTML = '';
+  logList.innerHTML = '';
 
-let collYeezy = '', collJordanike = '', collAltro = '';
-let subComuneMap = {};
+  let collYeezy = '', collJordanike = '', collAltro = '';
+  let subComuneMap = {};
 
-shoes.forEach(s => {
-const card = buildShoeCard(s);
-if (s.macro === 'collezione') {
-if (s.sub === 'yeezy') collYeezy += card;
-else if (s.sub === 'jordanike') collJordanike += card;
-else collAltro += card;
-} else {
-let subKey = (s.sub || 'casual').toLowerCase().trim();
-if (!subComuneMap[subKey]) subComuneMap[subKey] = '';
-subComuneMap[subKey] += card;
-}
-});
+  shoes.forEach(s => {
+    const card = buildShoeCard(s);
+    if (s.macro === 'collezione') {
+      if (s.sub === 'yeezy') collYeezy += card;
+      else if (s.sub === 'jordanike') collJordanike += card;
+      else collAltro += card;
+    } else {
+      let subKey = (s.sub || 'casual').toLowerCase().trim();
+      if (!subComuneMap[subKey]) subComuneMap[subKey] = '';
+      subComuneMap[subKey] += card;
+    }
+  });
 
-let comuneHtml = '';
-let defaultSubComune = ['lavoro', 'palestra', 'outdoor', 'casual', 'misto', 'sport', 'uscite'];
-defaultSubComune.forEach(sub => {
-if (subComuneMap[sub]) {
-comuneHtml += `<details class="subcat-accordion" open><summary>// ${sub.toUpperCase()}</summary><div class="subcat-content">${subComuneMap[sub]}</div></details>`;
-delete subComuneMap[sub];
-}
-});
-for (let sub in subComuneMap) {
-comuneHtml += `<details class="subcat-accordion" open><summary>// ${sub.toUpperCase()}</summary><div class="subcat-content">${subComuneMap[sub]}</div></details>`;
-}
-listComune.innerHTML = comuneHtml || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>';
+  let comuneHtml = '';
+  let defaultSubComune = ['lavoro', 'palestra', 'outdoor', 'casual', 'misto', 'sport', 'uscite'];
+  defaultSubComune.forEach(sub => {
+    if (subComuneMap[sub]) {
+      comuneHtml += `<details class="subcat-accordion" open><summary>// ${sub.toUpperCase()}</summary><div class="subcat-content">${subComuneMap[sub]}</div></details>`;
+      delete subComuneMap[sub];
+    }
+  });
+  for (let sub in subComuneMap) {
+    comuneHtml += `<details class="subcat-accordion" open><summary>// ${sub.toUpperCase()}</summary><div class="subcat-content">${subComuneMap[sub]}</div></details>`;
+  }
+  listComune.innerHTML = comuneHtml || '<div style="font-size:11px; color:var(--text-muted);">Nessun modello.</div>';
 
-listCollezione.innerHTML = `<details class="subcat-accordion" open><summary>// ADIDAS & YEEZY</summary><div class="subcat-content">${collYeezy || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>
-<details class="subcat-accordion" open><summary>// JORDAN & NIKE</summary><div class="subcat-content">${collJordanike || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>
-<details class="subcat-accordion" open><summary>// ALTRO COLLEZIONE</summary><div class="subcat-content">${collAltro || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>`;
+  listCollezione.innerHTML = `<details class="subcat-accordion" open><summary>// ADIDAS & YEEZY</summary><div class="subcat-content">${collYeezy || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>
+  <details class="subcat-accordion" open><summary>// JORDAN & NIKE</summary><div class="subcat-content">${collJordanike || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>
+  <details class="subcat-accordion" open><summary>// ALTRO COLLEZIONE</summary><div class="subcat-content">${collAltro || '<div style="font-size:11px; color:var(--text-muted);">Nessuna.</div>'}</div></details>`;
 
-if (logs.length === 0) {
-logList.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Nessun movimento recente.</div>';
-} else {
-logs.slice(0, 15).forEach(l => {
-logList.innerHTML += `<div class="log-item"><div><b>${l.shoeName}</b></div><div class="log-date">${l.date}</div></div>`;
-});
-}
+  if (logs.length === 0) {
+    logList.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Nessun movimento recente.</div>';
+  } else {
+    logs.slice(0, 15).forEach(l => {
+      logList.innerHTML += `<div class="log-item"><div><b>${l.shoeName}</b></div><div class="log-date">${l.date}</div></div>`;
+    });
+  }
 }
 
 function renderTrash() {
-const trashList = document.getElementById('trash-list');
-if(!trashList) return;
-trashList.innerHTML = '';
-if (trash.length === 0) { trashList.innerHTML = '<div style="font-size:11px; color:var(--text-muted);">Cestino vuoto.</div>'; return; }
-trash.forEach(s => {
-trashList.innerHTML += `<div class="trash-item"><div><b>${s.name}</b></div><button class="btn btn-secondary" style="padding:4px 8px; font-size:10px;" onclick="restoreShoe('${s.code}')">Ripristina</button></div>`;
-});
+  const trashList = document.getElementById('trash-list');
+  if(!trashList) return;
+  trashList.innerHTML = '';
+  if (trash.length === 0) { trashList.innerHTML = '<div style="font-size:11px; color:var(--text-muted);">Cestino vuoto.</div>'; return; }
+  trash.forEach(s => {
+    trashList.innerHTML += `<div class="trash-item"><div><b>${s.name}</b></div><button class="btn btn-secondary" style="padding:4px 8px; font-size:10px;" onclick="restoreShoe('${s.code}')">Ripristina</button></div>`;
+  });
 }
 
 function openAddShoeModal() { document.getElementById('shoeModal').style.display = 'flex'; }
 function closeShoeModal() { document.getElementById('shoeModal').style.display = 'none'; }
 function saveShoeFromModal() {
-const name = document.getElementById('mShoeName').value.trim();
-const goal = parseInt(document.getElementById('mShoeGoal').value, 10) || 30;
-const macro = document.getElementById('mShoeMacro').value;
-const sub = document.getElementById('mShoeSub').value;
-if (!name) { alert("Inserisci un nome."); return; }
-shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
-saveLocalData(); renderAll(); syncToServer(); closeShoeModal(); toggleDrawer();
+  const name = document.getElementById('mShoeName').value.trim();
+  const goal = parseInt(document.getElementById('mShoeGoal').value, 10) || 30;
+  const macro = document.getElementById('mShoeMacro').value;
+  const sub = document.getElementById('mShoeSub').value;
+  if (!name) { alert("Inserisci un nome."); return; }
+  shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
+  saveLocalData(); renderAll(); syncToServer(); closeShoeModal(); toggleDrawer();
 }
 
 function importFromSheetUrl() {
-const urlInput = document.getElementById('importSheetUrl');
-const url = urlInput.value.trim();
-const match = url.match(/\/d\/([a-zA-Z0-9-_]+)\//);
-if (!match) { alert("URL Google Fogli non valido."); return; }
-updateStatus("IMPORT...");
-let oldScript = document.getElementById('gvizImportScript');
-if (oldScript) oldScript.remove();
-let script = document.createElement('script');
-script.id = 'gvizImportScript';
-script.src = "https://docs.google.com/spreadsheets/d/" + match[1] + "/gviz/tq?headers=0&tqx=responseHandler:handleSheetImport";
-document.body.appendChild(script);
-urlInput.value = '';
+  const urlInput = document.getElementById('importSheetUrl');
+  const url = urlInput.value.trim();
+  const match = url.match(/\/d\/([a-zA-Z0-9-_]+)\//);
+  if (!match) { alert("URL Google Fogli non valido."); return; }
+  updateStatus("IMPORT...");
+  let oldScript = document.getElementById('gvizImportScript');
+  if (oldScript) oldScript.remove();
+  let script = document.createElement('script');
+  script.id = 'gvizImportScript';
+  script.src = "https://docs.google.com/spreadsheets/d/" + match[1] + "/gviz/tq?headers=0&tqx=responseHandler:handleSheetImport";
+  document.body.appendChild(script);
+  urlInput.value = '';
 }
 
 window.handleSheetImport = function(response) {
-if (response && response.status === 'ok') {
-shoes = [];
-response.table.rows.forEach((row) => {
-if (row && row.c) {
-let getVal = (idx) => (!row.c[idx] || row.c[idx].v === null) ? '' : String(row.c[idx].f || row.c[idx].v || '').trim();
-let name = getVal(0);
-if (!name || name.toLowerCase() === 'nome') return;
-let goal = parseInt(getVal(1), 10) || 30;
-let macroRaw = getVal(2).toLowerCase();
-let subRaw = getVal(3).toLowerCase();
+  if (response && response.status === 'ok') {
+    shoes = [];
+    response.table.rows.forEach((row) => {
+      if (row && row.c) {
+        let getVal = (idx) => (!row.c[idx] || row.c[idx].v === null) ? '' : String(row.c[idx].f || row.c[idx].v || '').trim();
+        let name = getVal(0);
+        if (!name || name.toLowerCase() === 'nome') return;
+        let goal = parseInt(getVal(1), 10) || 30;
+        let macroRaw = getVal(2).toLowerCase();
+        let subRaw = getVal(3).toLowerCase();
 
-let macro = macroRaw.includes('collezione') ? 'collezione' : 'uso comune';
-let sub = subRaw ? subRaw : 'casual';
+        let macro = macroRaw.includes('collezione') ? 'collezione' : 'uso comune';
+        let sub = subRaw ? subRaw : 'casual';
 
-shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
-}
-});
-saveLocalData(); renderAll(); syncToServer();
-alert("Importate " + shoes.length + " scarpe correttamente!");
-toggleDrawer();
-}
+        shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
+      }
+    });
+    saveLocalData(); renderAll(); syncToServer();
+    alert("Importate " + shoes.length + " scarpe correttamente!");
+    toggleDrawer();
+  }
 };
 
 function openImportLocalModal() { document.getElementById('jsonModal').style.display = 'flex'; }
 function closeJsonModal() { document.getElementById('jsonModal').style.display = 'none'; }
 function processJsonImport() {
-try {
-const data = JSON.parse(document.getElementById('mJsonText').value.trim());
-if (data && data.state) {
-for (let name in data.state) {
-let ex = shoes.find(s => s.name.toLowerCase() === name.toLowerCase());
-if (ex) ex.usages = data.state[name].usages;
-else shoes.push({ code: generateUniqueCode(), name: name, goal: 30, usages: data.state[name].usages, macro: 'uso comune', sub: 'casual' });
-}
-saveLocalData(); renderAll(); syncToServer(); closeJsonModal(); toggleDrawer(); alert("Importato!");
-}
-} catch(e) { alert("JSON non valido."); }
+  try {
+    const data = JSON.parse(document.getElementById('mJsonText').value.trim());
+    if (data && data.state) {
+      for (let name in data.state) {
+        let ex = shoes.find(s => s.name.toLowerCase() === name.toLowerCase());
+        if (ex) ex.usages = data.state[name].usages;
+        else shoes.push({ code: generateUniqueCode(), name: name, goal: 30, usages: data.state[name].usages, macro: 'uso comune', sub: 'casual' });
+      }
+      saveLocalData(); renderAll(); syncToServer(); closeJsonModal(); toggleDrawer(); alert("Importato!");
+    }
+  } catch(e) { alert("JSON non valido."); }
 }
 
 function exportBackupJSON() {
-let exp = { state: {}, history: logs };
-shoes.forEach(s => { exp.state[s.name] = { usages: s.usages }; });
-navigator.clipboard.writeText(JSON.stringify(exp, null, 2)).then(() => alert("Copiato negli appunti!"));
+  let exp = { state: {}, history: logs };
+  shoes.forEach(s => { exp.state[s.name] = { usages: s.usages }; });
+  navigator.clipboard.writeText(JSON.stringify(exp, null, 2)).then(() => alert("Copiato negli appunti!"));
 }
 
 async function openImportEmergencyModal() {
-const url = localStorage.getItem('j_sneaker_script_url');
-if (!url) { alert("Manca URL script."); return; }
-try {
-const res = await fetch(url + "?action=GET_ALL");
-const data = await res.json();
-if (data && data.shoes) { shoes = data.shoes; logs = data.logs || []; saveLocalData(); renderAll(); toggleDrawer(); alert("Ripristinato!"); }
-} catch(e) { alert("Errore recupero."); }
+  const url = localStorage.-getItem('j_sneaker_script_url');
+  if (!url) { alert("Manca URL script."); return; }
+  try {
+    const res = await fetch(url + "?action=GET_ALL");
+    const data = await res.json();
+    if (data && data.shoes) { shoes = data.shoes; logs = data.logs || []; saveLocalData(); renderAll(); toggleDrawer(); alert("Ripristinato!"); }
+  } catch(e) { alert("Errore recupero."); }
 }
 </script>
 </body>
