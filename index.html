@@ -573,6 +573,7 @@ transition: width 0.3s ease;
 </div>
 <hr style="border-color: var(--border-color); margin: 4px 0;">
 <button id="addShoeBtn" class="btn">➕ Aggiungi Scarpa</button>
+<button id="openRotationModalBtn" class="btn btn-secondary">📊 Monitoraggio Rotazione</button>
 <button id="openTrashModalBtn" class="btn btn-secondary">🗑️ Cestino Scarpe</button>
 <button id="importLocalBtn" class="btn btn-secondary">📥 Importa JSON Locale</button>
 <button id="exportJsonBtn" class="btn btn-secondary">📤 Esporta JSON</button>
@@ -608,6 +609,45 @@ transition: width 0.3s ease;
 <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
 <button id="closeShoeModalBtn" class="btn btn-secondary">Annulla</button>
 <button id="saveShoeBtn" class="btn">Salva</button>
+</div>
+</div>
+</div>
+
+
+<!-- Modal Monitoraggio Rotazione (Aggiunta Inserimenti) -->
+<div id="rotationModal" class="modal-overlay">
+<div class="modal-box">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+<div style="font-size: 16px; font-weight: 800; color:var(--accent-blue);">📊 Gestione Monitoraggio Rotazione</div>
+<button id="closeRotationModalBtn" class="close-btn" style="font-size:18px;">✕</button>
+</div>
+<div style="background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px;">
+<div style="font-size: 12px; font-weight: 800; color: var(--accent-blue); margin-bottom: 10px; text-transform: uppercase;">➕ Nuova Implementazione Monitoraggio</div>
+<div class="rot-grid-inputs">
+<div class="field-group" style="margin-bottom:0;">
+<label>1. Macrogruppo</label>
+<select id="rotMacroSelect">
+<option value="uso comune">Uso Comune</option>
+<option value="collezione">Collezione</option>
+</select>
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>2. Seleziona Scarpa</label>
+<select id="rotShoeSelect"></select>
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>Utilizzi / Settimana</label>
+<input type="number" id="rotWeeklyUses" value="2" min="1">
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>Data di Partenza</label>
+<input type="date" id="rotStartDate">
+</div>
+</div>
+<button id="addRotationBtn" class="btn" style="margin-top: 10px;">Aggiungi al Monitoraggio</button>
+</div>
+<div style="display:flex; justify-content:flex-end;">
+<button id="closeRotationModalBtn2" class="btn btn-secondary">Chiudi</button>
 </div>
 </div>
 </div>
@@ -659,7 +699,7 @@ transition: width 0.3s ease;
 </header>
 
 
-<!-- NUOVA SEZIONE MONITORAGGIO ROTAZIONI (POSIZIONATA IN CIMA) -->
+<!-- ELENCO MONITORAGGIO ROTAZIONI IN HOME (SOLO RESOCONTI) -->
 <div class="main-layout" style="margin-bottom: 20px;">
 <details class="panel-accordion" open>
 <summary>
@@ -667,32 +707,6 @@ transition: width 0.3s ease;
 <span id="count-rotation" class="badge-count">0 ATTIVI</span>
 </summary>
 <div class="panel-content">
-<div style="background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px;">
-<div style="font-size: 12px; font-weight: 800; color: var(--accent-blue); margin-bottom: 10px; text-transform: uppercase;">➕ Aggiungi Scarpa al Monitoraggio</div>
-<div class="rot-grid-inputs">
-<div class="field-group" style="margin-bottom:0;">
-<label>1. Macrogruppo</label>
-<select id="rotMacroSelect">
-<option value="uso comune">Uso Comune</option>
-<option value="collezione">Collezione</option>
-</select>
-</div>
-<div class="field-group" style="margin-bottom:0;">
-<label>2. Seleziona Scarpa</label>
-<select id="rotShoeSelect"></select>
-</div>
-<div class="field-group" style="margin-bottom:0;">
-<label>Utilizzi / Settimana</label>
-<input type="number" id="rotWeeklyUses" value="2" min="1">
-</div>
-<div class="field-group" style="margin-bottom:0;">
-<label>Data di Partenza</label>
-<input type="date" id="rotStartDate">
-</div>
-</div>
-<button id="addRotationBtn" class="btn" style="margin-top: 10px;">Aggiungi al Monitoraggio</button>
-</div>
-
 <div id="rotationListContainer">
 <div style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px 0;">Nessun monitoraggio attivo.</div>
 </div>
@@ -861,6 +875,14 @@ const appsScriptUrl = document.getElementById('appsScriptUrl');
 if (appsScriptUrl) appsScriptUrl.addEventListener('change', saveConfig);
 const addShoeBtn = document.getElementById('addShoeBtn');
 if (addShoeBtn) addShoeBtn.addEventListener('click', openAddShoeModal);
+
+const openRotationModalBtn = document.getElementById('openRotationModalBtn');
+if (openRotationModalBtn) openRotationModalBtn.addEventListener('click', openRotationModal);
+const closeRotationModalBtn = document.getElementById('closeRotationModalBtn');
+if (closeRotationModalBtn) closeRotationModalBtn.addEventListener('click', closeRotationModal);
+const closeRotationModalBtn2 = document.getElementById('closeRotationModalBtn2');
+if (closeRotationModalBtn2) closeRotationModalBtn2.addEventListener('click', closeRotationModal);
+
 const openTrashModalBtn = document.getElementById('openTrashModalBtn');
 if (openTrashModalBtn) openTrashModalBtn.addEventListener('click', openTrashModal);
 const closeTrashModalBtn = document.getElementById('closeTrashModalBtn');
@@ -1043,12 +1065,14 @@ return;
 rotations.push({
 shoeCode: code,
 weeklyUses: weeklyUses,
-startDate: startDate
+startDate: startDate,
+initialUsages: (shoes.find(s => s.code === code) || {}).usages || 0
 });
 
 saveLocalData();
 renderAll();
 syncToServer();
+closeRotationModal();
 }
 
 window.removeRotationTrack = function(code) {
@@ -1090,7 +1114,7 @@ if (!shoe) return;
 shoe.usages += 1;
 shoe.lastUsed = new Date().toLocaleDateString('it-IT');
 const nowStr = new Date().toLocaleDateString('it-IT') + " " + new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
-logs.unshift({ date: nowStr, shoeCode: shoe.code, shoeName: shoe.name, macro: shoe.macro });
+logs.unshift({ date: nowStr, shoeCode: shoe.code, shoeName: shoe.name, macro: shoe.macro, timestamp: Date.now() });
 if (logs.length > 50) logs.pop();
 saveLocalData();
 renderAll();
@@ -1309,31 +1333,53 @@ container.innerHTML = '<div style="font-size:11px; color:var(--text-muted); text
 return;
 }
 
+const now = new Date();
+const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+
 rotations.forEach(rot => {
 const shoe = shoes.find(s => s.code === rot.shoeCode);
 if (!shoe) return;
 
 const remainingUses = Math.max(0, shoe.goal - shoe.usages);
-const weeklyUses = rot.weeklyUses || 1;
-const totalWeeks = remainingUses > 0 ? Math.ceil(remainingUses / weeklyUses) : 0;
+const plannedWeeklyUses = rot.weeklyUses || 1;
+const startDateObj = new Date(rot.startDate);
 
-// Calcolo Data Finale
+// Calcolo media effettiva d'uso dalla data di partenza per data finale dinamica
+let currentPace = plannedWeeklyUses;
+if (!isNaN(startDateObj.getTime())) {
+const daysPassed = Math.max(1, (now - startDateObj) / (1000 * 60 * 60 * 24));
+const initialUsages = rot.initialUsages !== undefined ? rot.initialUsages : 0;
+const usesSinceStart = Math.max(0, shoe.usages - initialUsages);
+if (daysPassed >= 3 && usesSinceStart > 0) {
+currentPace = (usesSinceStart / daysPassed) * 7;
+}
+}
+
+const totalWeeks = remainingUses > 0 ? Math.ceil(remainingUses / Math.max(0.1, currentPace)) : 0;
+
+// Calcolo Data Finale Dinamica
 let endDateStr = "Raggiunto!";
 if (remainingUses > 0) {
-const startDateObj = new Date(rot.startDate);
-if (!isNaN(startDateObj.getTime())) {
-const endDateObj = new Date(startDateObj);
+const endDateObj = new Date(now);
 endDateObj.setDate(endDateObj.getDate() + (totalWeeks * 7));
 endDateStr = endDateObj.toLocaleDateString('it-IT');
 }
+
+// Calcolo utilizzi negli ultimi 7 giorni per la barra di completamento settimanale
+const usesLast7Days = logs.filter(l => {
+if (l.shoeCode !== shoe.code) return false;
+if (l.timestamp) return l.timestamp >= sevenDaysAgo.getTime();
+// Fallback analisi data stringa
+const parts = l.date.split(' ')[0].split('/');
+if (parts.length === 3) {
+const d = new Date(parts[2], parts[1] - 1, parts[0]);
+return d >= sevenDaysAgo;
 }
+return false;
+}).length;
 
-// Calcolo Mini Obiettivi e Percentuali
-const globalPct = Math.min(100, Math.round((shoe.usages / (shoe.goal || 1)) * 100));
-
-// Calcolo stimato completamento settimanale/mensile
-const targetWeeklyUses = rot.weeklyUses;
-const targetMonthlyUses = rot.weeklyUses * 4;
+const weeklyPct = Math.min(100, Math.round((usesLast7Days / plannedWeeklyUses) * 100));
+const targetMonthlyUses = plannedWeeklyUses * 4;
 
 container.innerHTML += `
 <div class="rot-card">
@@ -1352,7 +1398,7 @@ container.innerHTML += `
 </div>
 <div class="field-group" style="margin-bottom:0;">
 <label>Data Partenza</label>
-<input type="text" value="${new Date(rot.startDate).toLocaleDateString('it-IT')}" disabled style="opacity:0.7;">
+<input type="text" value="${startDateObj.toLocaleDateString('it-IT')}" disabled style="opacity:0.7;">
 </div>
 </div>
 
@@ -1362,14 +1408,10 @@ container.innerHTML += `
 <span class="rot-stat-val" style="color:var(--accent-blue);">${shoe.usages} / ${shoe.goal}</span>
 </div>
 <div class="rot-stat-item">
-<span class="rot-stat-label">Rimanenti</span>
-<span class="rot-stat-val" style="color:var(--accent-orange);">${remainingUses}</span>
-</div>
-<div class="rot-stat-item">
 <span class="rot-stat-label">Orizzonte Tempo</span>
 <span class="rot-stat-val">${totalWeeks} Settimane</span>
 </div>
-<div class="rot-stat-item">
+<div class="rot-stat-item" style="grid-column: span 2;">
 <span class="rot-stat-label">Data Finale Prevista</span>
 <span class="rot-stat-val" style="color:var(--accent-volt);">${endDateStr}</span>
 </div>
@@ -1377,16 +1419,15 @@ container.innerHTML += `
 
 <div style="margin-top:10px; font-size:10px; color:var(--text-muted);">
 <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:2px;">
-<span>Completamento Totale Obiettivo</span>
-<span style="color:var(--accent-volt);">${globalPct}%</span>
+<span>Obiettivo Settimanale (${usesLast7Days}/${plannedWeeklyUses})</span>
+<span style="color:var(--accent-volt);">${weeklyPct}%</span>
 </div>
 <div class="progress-bar-bg">
-<div class="progress-bar-fill" style="width: ${globalPct}%;"></div>
+<div class="progress-bar-fill" style="width: ${weeklyPct}%;"></div>
 </div>
 </div>
 
 <div style="margin-top:8px; display:flex; gap:10px; font-size:10px; color:var(--text-muted);">
-<span>Target Settimanale: <b style="color:#fff;">${targetWeeklyUses} usi</b></span>
 <span>Target Mensile: <b style="color:#fff;">${targetMonthlyUses} usi</b></span>
 </div>
 </div>`;
@@ -1397,6 +1438,12 @@ container.innerHTML += `
 function openAddShoeModal() { document.getElementById('shoeModal').style.display = 'flex'; }
 function closeShoeModal() { document.getElementById('shoeModal').style.display = 'none'; }
 
+function openRotationModal() {
+updateRotationShoeDropdown();
+document.getElementById('rotationModal').style.display = 'flex';
+toggleDrawer();
+}
+function closeRotationModal() { document.getElementById('rotationModal').style.display = 'none'; }
 
 function openTrashModal() { 
 renderTrash();
