@@ -467,9 +467,76 @@ display: flex;
 gap: 6px;
 align-items: center;
 }
+
+/* ROTATION MONITORING STYLES */
+.rot-card {
+background: var(--card-color);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-md);
+padding: 12px;
+margin-bottom: 12px;
+}
+.rot-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 10px;
+border-bottom: 1px solid rgba(255,255,255,0.05);
+padding-bottom: 8px;
+}
+.rot-title {
+font-size: 14px;
+font-weight: 800;
+color: var(--accent-blue);
+}
+.rot-grid-inputs {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+gap: 10px;
+margin-bottom: 10px;
+}
+.rot-stats-box {
+background: rgba(0,0,0,0.2);
+border-radius: var(--radius-sm);
+padding: 10px;
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 8px;
+font-size: 11px;
+}
+.rot-stat-item {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+.rot-stat-label {
+color: var(--text-muted);
+font-size: 9px;
+text-transform: uppercase;
+font-weight: 700;
+}
+.rot-stat-val {
+font-weight: 800;
+font-size: 12px;
+}
+.progress-bar-bg {
+background: rgba(255,255,255,0.1);
+border-radius: 10px;
+height: 6px;
+width: 100%;
+overflow: hidden;
+margin-top: 4px;
+}
+.progress-bar-fill {
+background: var(--accent-volt);
+height: 100%;
+width: 0%;
+transition: width 0.3s ease;
+}
 </style>
 </head>
 <body>
+
 
 <!-- LOGIN OVERLAY -->
 <div id="loginOverlay">
@@ -488,6 +555,7 @@ align-items: center;
 <div id="loginError" class="login-error">Credenziali non valide o errore di accesso!</div>
 </div>
 </div>
+
 
 <div id="drawerMenu" class="drawer">
 <div class="drawer-header">
@@ -512,6 +580,7 @@ align-items: center;
 <hr style="border-color: var(--border-color); margin: 4px 0;">
 <button id="logoutBtn" class="btn btn-danger">🚪 Logout</button>
 </div>
+
 
 <!-- Modal Aggiungi Scarpa -->
 <div id="shoeModal" class="modal-overlay">
@@ -543,6 +612,7 @@ align-items: center;
 </div>
 </div>
 
+
 <!-- Modal Cestino Scarpe -->
 <div id="trashModal" class="modal-overlay">
 <div class="modal-box">
@@ -559,6 +629,7 @@ align-items: center;
 </div>
 </div>
 
+
 <!-- Modal JSON -->
 <div id="jsonModal" class="modal-overlay">
 <div class="modal-box">
@@ -573,6 +644,7 @@ align-items: center;
 </div>
 </div>
 
+
 <div class="container">
 <header>
 <div class="header-left">
@@ -585,6 +657,49 @@ align-items: center;
 <button id="menuBtn" class="menu-btn">☰ Menu</button>
 </div>
 </header>
+
+
+<!-- NUOVA SEZIONE MONITORAGGIO ROTAZIONI (POSIZIONATA IN CIMA) -->
+<div class="main-layout" style="margin-bottom: 20px;">
+<details class="panel-accordion" open>
+<summary>
+<span>📊 MONITORAGGIO ROTAZIONI</span>
+<span id="count-rotation" class="badge-count">0 ATTIVI</span>
+</summary>
+<div class="panel-content">
+<div style="background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px;">
+<div style="font-size: 12px; font-weight: 800; color: var(--accent-blue); margin-bottom: 10px; text-transform: uppercase;">➕ Aggiungi Scarpa al Monitoraggio</div>
+<div class="rot-grid-inputs">
+<div class="field-group" style="margin-bottom:0;">
+<label>1. Macrogruppo</label>
+<select id="rotMacroSelect">
+<option value="uso comune">Uso Comune</option>
+<option value="collezione">Collezione</option>
+</select>
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>2. Seleziona Scarpa</label>
+<select id="rotShoeSelect"></select>
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>Utilizzi / Settimana</label>
+<input type="number" id="rotWeeklyUses" value="2" min="1">
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>Data di Partenza</label>
+<input type="date" id="rotStartDate">
+</div>
+</div>
+<button id="addRotationBtn" class="btn" style="margin-top: 10px;">Aggiungi al Monitoraggio</button>
+</div>
+
+<div id="rotationListContainer">
+<div style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px 0;">Nessun monitoraggio attivo.</div>
+</div>
+</div>
+</details>
+</div>
+
 
 <div class="stats-grid">
 <div class="stat-card">
@@ -605,6 +720,7 @@ align-items: center;
 </div>
 </div>
 
+
 <div class="main-layout">
 <details class="panel-accordion" open>
 <summary>
@@ -614,6 +730,7 @@ align-items: center;
 <div class="panel-content" id="list-comune"></div>
 </details>
 
+
 <details class="panel-accordion" open>
 <summary>
 <span>02 // COLLEZIONE</span>
@@ -622,6 +739,7 @@ align-items: center;
 <div class="panel-content" id="list-collezione"></div>
 </details>
 
+
 <details class="panel-accordion" open>
 <summary><span>ULTIMI MOVIMENTI</span></summary>
 <div class="panel-content" id="log-list"></div>
@@ -629,10 +747,12 @@ align-items: center;
 </div>
 </div>
 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
 
 const firebaseConfig = {
 apiKey: "AIzaSyBcHvz8Y7kbLtXvxutUS7xgSzb3FQe21dQ",
@@ -645,14 +765,18 @@ appId: "1:754988539366:web:653691dea108b565c9ca27",
 measurementId: "G-9LRK77JQHF"
 };
 
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+
 let shoes = [];
 let logs = [];
 let trash = [];
+let rotations = [];
 const currentYear = new Date().getFullYear();
+
 
 function checkAuth() {
 onAuthStateChanged(auth, (user) => {
@@ -664,6 +788,7 @@ document.getElementById('loginOverlay').style.display = 'flex';
 }
 });
 }
+
 
 async function handleLogin() {
 const userIn = document.getElementById('loginUser').value.trim();
@@ -679,6 +804,7 @@ errEl.innerText = error.message;
 }
 }
 
+
 async function handleLogout() {
 try {
 await signOut(auth);
@@ -688,9 +814,11 @@ location.reload();
 }
 }
 
+
 function generateUniqueCode() {
 return 'SK-' + Math.random().toString(36).substring(2, 6).toUpperCase();
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('loginBtn').addEventListener('click', handleLogin);
@@ -700,17 +828,25 @@ if (e.key === 'Enter') handleLogin();
 document.getElementById('loginUser').addEventListener('keypress', (e) => {
 if (e.key === 'Enter') handleLogin();
 });
+// Imposta data di partenza standard a oggi
+const todayStr = new Date().toISOString().split('T')[0];
+const startInput = document.getElementById('rotStartDate');
+if (startInput) startInput.value = todayStr;
+
 checkAuth();
 });
+
 
 function initApp() {
 loadConfig();
 loadLocalData();
 updateSubGroupOptions();
+updateRotationShoeDropdown();
 renderAll();
 initEventListeners();
 loadFromFirebase();
 }
+
 
 function initEventListeners() {
 const menuBtn = document.getElementById('menuBtn');
@@ -747,12 +883,20 @@ const closeJsonModalBtn = document.getElementById('closeJsonModalBtn');
 if (closeJsonModalBtn) closeJsonModalBtn.addEventListener('click', closeJsonModal);
 const processJsonBtn = document.getElementById('processJsonBtn');
 if (processJsonBtn) processJsonBtn.addEventListener('click', processJsonImport);
+
+// Eventi Monitoraggio Rotazioni
+const rotMacroSelect = document.getElementById('rotMacroSelect');
+if (rotMacroSelect) rotMacroSelect.addEventListener('change', updateRotationShoeDropdown);
+const addRotationBtn = document.getElementById('addRotationBtn');
+if (addRotationBtn) addRotationBtn.addEventListener('click', addRotationTrack);
 }
+
 
 function toggleDrawer() {
 const drawer = document.getElementById('drawerMenu');
 if (drawer) drawer.classList.toggle('open');
 }
+
 
 function saveConfig() {
 const url = document.getElementById('appsScriptUrl').value.trim();
@@ -760,35 +904,44 @@ localStorage.setItem('j_sneaker_script_url', url);
 updateStatus("CONFIG SALVATA");
 }
 
+
 function loadConfig() {
 const url = localStorage.getItem('j_sneaker_script_url') || '';
 const el = document.getElementById('appsScriptUrl');
 if (el) el.value = url;
 }
 
+
 function updateStatus(msg) {
 const badge = document.getElementById('syncStatus');
 if (badge) badge.innerText = msg;
 }
 
+
 function saveLocalData() {
 localStorage.setItem('j_sneaker_shoes_v10', JSON.stringify(shoes));
 localStorage.setItem('j_sneaker_logs_v10', JSON.stringify(logs));
 localStorage.setItem('j_sneaker_trash_v10', JSON.stringify(trash));
+localStorage.setItem('j_sneaker_rotations_v10', JSON.stringify(rotations));
 }
+
 
 function loadLocalData() {
 const localShoes = localStorage.getItem('j_sneaker_shoes_v10');
 const localLogs = localStorage.getItem('j_sneaker_logs_v10');
 const localTrash = localStorage.getItem('j_sneaker_trash_v10');
+const localRotations = localStorage.getItem('j_sneaker_rotations_v10');
 if (localShoes) shoes = JSON.parse(localShoes);
 if (localLogs) logs = JSON.parse(localLogs);
 if (localTrash) trash = JSON.parse(localTrash);
+if (localRotations) rotations = JSON.parse(localRotations);
 }
+
 
 function getYearUsages(shoeCode) {
 return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + currentYear)).length;
 }
+
 
 async function loadFromFirebase() {
 updateStatus("SYNC...");
@@ -799,7 +952,9 @@ const data = snapshot.val();
 if (data.shoes) shoes = data.shoes;
 if (data.logs) logs = data.logs;
 if (data.trash) trash = data.trash;
+if (data.rotations) rotations = data.rotations;
 saveLocalData();
+updateRotationShoeDropdown();
 renderAll();
 }
 updateStatus("ONLINE");
@@ -809,13 +964,16 @@ updateStatus("ERR SYNC");
 }
 }
 
+
 async function syncToServer() {
 updateStatus("SYNC...");
 const payload = {
 shoes: shoes,
 logs: logs,
-trash: trash
+trash: trash,
+rotations: rotations
 };
+
 
 const scriptUrl = localStorage.getItem('j_sneaker_script_url');
 if (scriptUrl) {
@@ -829,6 +987,7 @@ body: JSON.stringify({ action: "SYNC_ALL", shoes: shoes, logs: logs })
 } catch(e) {}
 }
 
+
 try {
 await set(ref(db, '/'), payload);
 updateStatus("ONLINE");
@@ -837,6 +996,7 @@ console.error("Errore scrittura Firebase:", e);
 updateStatus("ERR SYNC");
 }
 }
+
 
 function updateSubGroupOptions() {
 const macro = document.getElementById('mShoeMacro').value;
@@ -850,6 +1010,67 @@ subSelect.innerHTML = '<option value="lavoro">Lavoro / Quotidiano</option><optio
 }
 }
 
+function updateRotationShoeDropdown() {
+const macro = document.getElementById('rotMacroSelect').value;
+const shoeSelect = document.getElementById('rotShoeSelect');
+if(!shoeSelect) return;
+shoeSelect.innerHTML = '';
+const filtered = shoes.filter(s => s.macro === macro);
+if (filtered.length === 0) {
+shoeSelect.innerHTML = '<option value="">Nessuna scarpa disponibile</option>';
+return;
+}
+filtered.forEach(s => {
+shoeSelect.innerHTML += `<option value="${s.code}">${s.name}</option>`;
+});
+}
+
+function addRotationTrack() {
+const code = document.getElementById('rotShoeSelect').value;
+const weeklyUses = parseInt(document.getElementById('rotWeeklyUses').value, 10);
+const startDate = document.getElementById('rotStartDate').value;
+
+if (!code) { alert("Seleziona una scarpa!"); return; }
+if (!weeklyUses || weeklyUses < 1) { alert("Inserisci un numero valido di utilizzi a settimana!"); return; }
+if (!startDate) { alert("Seleziona una data di partenza!"); return; }
+
+const exists = rotations.some(r => r.shoeCode === code);
+if (exists) {
+alert("Questa scarpa è già presente nella sezione di monitoraggio!");
+return;
+}
+
+rotations.push({
+shoeCode: code,
+weeklyUses: weeklyUses,
+startDate: startDate
+});
+
+saveLocalData();
+renderAll();
+syncToServer();
+}
+
+window.removeRotationTrack = function(code) {
+rotations = rotations.filter(r => r.shoeCode !== code);
+saveLocalData();
+renderAll();
+syncToServer();
+};
+
+window.updateRotationWeeklyUses = function(code, newUses) {
+const rot = rotations.find(r => r.shoeCode === code);
+if (!rot) return;
+const val = parseInt(newUses, 10);
+if (val && val > 0) {
+rot.weeklyUses = val;
+saveLocalData();
+renderAll();
+syncToServer();
+}
+};
+
+
 window.editGoal = function(code) {
 const shoe = shoes.find(s => s.code === code);
 if (!shoe) return;
@@ -861,6 +1082,7 @@ renderAll();
 syncToServer();
 }
 };
+
 
 window.recordUsage = function(code) {
 const shoe = shoes.find(s => s.code === code);
@@ -875,6 +1097,7 @@ renderAll();
 syncToServer();
 };
 
+
 window.decreaseUsage = function(code) {
 const shoe = shoes.find(s => s.code === code);
 if (!shoe || shoe.usages <= 0) return;
@@ -885,6 +1108,7 @@ saveLocalData();
 renderAll();
 syncToServer();
 };
+
 
 function undoLastLog() {
 if (logs.length === 0) { alert("Nessun movimento recente."); return; }
@@ -897,17 +1121,21 @@ syncToServer();
 alert("Ultimo movimento annullato!");
 }
 
+
 window.deleteShoe = function(code) {
 const shoe = shoes.find(s => s.code === code);
 if (!shoe) return;
 if (confirm("Spostare '" + shoe.name + "' nel cestino?")) {
 trash.push(shoe);
 shoes = shoes.filter(s => s.code !== code);
+rotations = rotations.filter(r => r.shoeCode !== code);
 saveLocalData();
+updateRotationShoeDropdown();
 renderAll();
 syncToServer();
 }
 };
+
 
 window.restoreShoe = function(code) {
 const shoe = trash.find(s => s.code === code);
@@ -915,9 +1143,11 @@ if (!shoe) return;
 shoes.push(shoe);
 trash = trash.filter(s => s.code !== code);
 saveLocalData();
+updateRotationShoeDropdown();
 renderAll();
 syncToServer();
 };
+
 
 window.permanentlyDeleteShoe = function(code) {
 const shoe = trash.find(s => s.code === code);
@@ -929,6 +1159,7 @@ renderAll();
 syncToServer();
 }
 };
+
 
 function emptyTrash() {
 if (trash.length === 0) {
@@ -943,11 +1174,14 @@ syncToServer();
 }
 }
 
+
 function renderAll() {
 updateStats();
 renderLists();
 renderTrash();
+renderRotations();
 }
+
 
 function updateStats() {
 document.getElementById('stat-comune').innerText = shoes.filter(s => s.macro === 'uso comune').length;
@@ -959,7 +1193,9 @@ let completed = shoes.filter(s => s.goal > 0 && s.usages >= s.goal).length;
 document.getElementById('stat-completed').innerText = completed;
 document.getElementById('count-comune').innerText = shoes.filter(s => s.macro === 'uso comune').length + " PAIA";
 document.getElementById('count-collezione').innerText = shoes.filter(s => s.macro === 'collezione').length + " PAIA";
+document.getElementById('count-rotation').innerText = rotations.length + " ATTIVI";
 }
+
 
 function buildShoeCard(shoe) {
 const yearUsages = getYearUsages(shoe.code);
@@ -968,6 +1204,7 @@ const pct = Math.round((shoe.usages / goal) * 100);
 const isCompleted = pct >= 100;
 const pctClass = isCompleted ? "percent-badge completed" : "percent-badge";
 const lastUsedStr = shoe.lastUsed ? shoe.lastUsed : 'Mai';
+
 
 return `<div class="shoe-item">
 <div class="shoe-info">
@@ -987,6 +1224,7 @@ return `<div class="shoe-item">
 </div>
 </div>`;
 }
+
 
 function renderLists() {
 const listComune = document.getElementById('list-comune');
@@ -1034,6 +1272,7 @@ logList.innerHTML += `<div class="log-item"><div><b>${l.shoeName}</b></div><div 
 }
 }
 
+
 function renderTrash() {
 const trashModalList = document.getElementById('trash-modal-list');
 if(!trashModalList) return;
@@ -1060,8 +1299,104 @@ trashModalList.innerHTML += `<div class="trash-item">
 });
 }
 
+function renderRotations() {
+const container = document.getElementById('rotationListContainer');
+if (!container) return;
+container.innerHTML = '';
+
+if (rotations.length === 0) {
+container.innerHTML = '<div style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px 0;">Nessun monitoraggio attivo.</div>';
+return;
+}
+
+rotations.forEach(rot => {
+const shoe = shoes.find(s => s.code === rot.shoeCode);
+if (!shoe) return;
+
+const remainingUses = Math.max(0, shoe.goal - shoe.usages);
+const weeklyUses = rot.weeklyUses || 1;
+const totalWeeks = remainingUses > 0 ? Math.ceil(remainingUses / weeklyUses) : 0;
+
+// Calcolo Data Finale
+let endDateStr = "Raggiunto!";
+if (remainingUses > 0) {
+const startDateObj = new Date(rot.startDate);
+if (!isNaN(startDateObj.getTime())) {
+const endDateObj = new Date(startDateObj);
+endDateObj.setDate(endDateObj.getDate() + (totalWeeks * 7));
+endDateStr = endDateObj.toLocaleDateString('it-IT');
+}
+}
+
+// Calcolo Mini Obiettivi e Percentuali
+const globalPct = Math.min(100, Math.round((shoe.usages / (shoe.goal || 1)) * 100));
+
+// Calcolo stimato completamento settimanale/mensile
+const targetWeeklyUses = rot.weeklyUses;
+const targetMonthlyUses = rot.weeklyUses * 4;
+
+container.innerHTML += `
+<div class="rot-card">
+<div class="rot-header">
+<div>
+<div class="rot-title">${shoe.name}</div>
+<div style="font-size:10px; color:var(--text-muted); font-weight:700;">${shoe.macro.toUpperCase()}</div>
+</div>
+<span class="delete-icon" onclick="removeRotationTrack('${rot.shoeCode}')" title="Rimuovi da questa sezione">🗑️</span>
+</div>
+
+<div class="rot-grid-inputs">
+<div class="field-group" style="margin-bottom:0;">
+<label>Usi / Settimana</label>
+<input type="number" value="${rot.weeklyUses}" min="1" onchange="updateRotationWeeklyUses('${rot.shoeCode}', this.value)">
+</div>
+<div class="field-group" style="margin-bottom:0;">
+<label>Data Partenza</label>
+<input type="text" value="${new Date(rot.startDate).toLocaleDateString('it-IT')}" disabled style="opacity:0.7;">
+</div>
+</div>
+
+<div class="rot-stats-box">
+<div class="rot-stat-item">
+<span class="rot-stat-label">Utilizzi Svolti</span>
+<span class="rot-stat-val" style="color:var(--accent-blue);">${shoe.usages} / ${shoe.goal}</span>
+</div>
+<div class="rot-stat-item">
+<span class="rot-stat-label">Rimanenti</span>
+<span class="rot-stat-val" style="color:var(--accent-orange);">${remainingUses}</span>
+</div>
+<div class="rot-stat-item">
+<span class="rot-stat-label">Orizzonte Tempo</span>
+<span class="rot-stat-val">${totalWeeks} Settimane</span>
+</div>
+<div class="rot-stat-item">
+<span class="rot-stat-label">Data Finale Prevista</span>
+<span class="rot-stat-val" style="color:var(--accent-volt);">${endDateStr}</span>
+</div>
+</div>
+
+<div style="margin-top:10px; font-size:10px; color:var(--text-muted);">
+<div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:2px;">
+<span>Completamento Totale Obiettivo</span>
+<span style="color:var(--accent-volt);">${globalPct}%</span>
+</div>
+<div class="progress-bar-bg">
+<div class="progress-bar-fill" style="width: ${globalPct}%;"></div>
+</div>
+</div>
+
+<div style="margin-top:8px; display:flex; gap:10px; font-size:10px; color:var(--text-muted);">
+<span>Target Settimanale: <b style="color:#fff;">${targetWeeklyUses} usi</b></span>
+<span>Target Mensile: <b style="color:#fff;">${targetMonthlyUses} usi</b></span>
+</div>
+</div>`;
+});
+}
+
+
 function openAddShoeModal() { document.getElementById('shoeModal').style.display = 'flex'; }
 function closeShoeModal() { document.getElementById('shoeModal').style.display = 'none'; }
+
 
 function openTrashModal() { 
 renderTrash();
@@ -1070,6 +1405,7 @@ toggleDrawer();
 }
 function closeTrashModal() { document.getElementById('trashModal').style.display = 'none'; }
 
+
 function saveShoeFromModal() {
 const name = document.getElementById('mShoeName').value.trim();
 const goal = parseInt(document.getElementById('mShoeGoal').value, 10) || 30;
@@ -1077,17 +1413,20 @@ const macro = document.getElementById('mShoeMacro').value;
 const sub = document.getElementById('mShoeSub').value;
 if (!name) { alert("Inserisci un nome."); return; }
 shoes.push({ code: generateUniqueCode(), name: name, goal: goal, usages: 0, macro: macro, sub: sub, lastUsed: null });
-saveLocalData(); renderAll(); syncToServer(); closeShoeModal(); toggleDrawer();
+saveLocalData(); updateRotationShoeDropdown(); renderAll(); syncToServer(); closeShoeModal(); toggleDrawer();
 }
+
 
 function openImportLocalModal() {
 document.getElementById('mJsonText').value = '';
 document.getElementById('jsonModal').style.display = 'flex';
 }
 
+
 function closeJsonModal() {
 document.getElementById('jsonModal').style.display = 'none';
 }
+
 
 function processJsonImport() {
 const text = document.getElementById('mJsonText').value.trim();
@@ -1100,8 +1439,10 @@ shoes = data;
 shoes = data.shoes;
 if (data.logs) logs = data.logs;
 if (data.trash) trash = data.trash;
+if (data.rotations) rotations = data.rotations;
 }
 saveLocalData();
+updateRotationShoeDropdown();
 renderAll();
 syncToServer();
 closeJsonModal();
@@ -1112,8 +1453,9 @@ alert("Formato JSON non valido!");
 }
 }
 
+
 function exportBackupJSON() {
-const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ shoes, logs, trash }, null, 2));
+const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ shoes, logs, trash, rotations }, null, 2));
 const dlAnchorElem = document.createElement('a');
 dlAnchorElem.setAttribute("href", dataStr);
 dlAnchorElem.setAttribute("download", "sneaker_rotation_backup.json");
