@@ -1382,7 +1382,12 @@ const weeklyPct = Math.min(100, Math.round((usesLast7Days / plannedWeeklyUses) *
 const targetMonthlyUses = plannedWeeklyUses * 4;
 
 container.innerHTML += `
-<div class="rot-card">
+<details class="subcat-accordion">
+<summary>
+<span style="font-size: 13px; font-weight: 800; color: var(--accent-blue);">${shoe.name} (${shoe.macro.toUpperCase()})</span>
+</summary>
+<div class="subcat-content">
+<div class="rot-card" style="margin-bottom:0;">
 <div class="rot-header">
 <div>
 <div class="rot-title">${shoe.name}</div>
@@ -1430,7 +1435,9 @@ container.innerHTML += `
 <div style="margin-top:8px; display:flex; gap:10px; font-size:10px; color:var(--text-muted);">
 <span>Target Mensile: <b style="color:#fff;">${targetMonthlyUses} usi</b></span>
 </div>
-</div>`;
+</div>
+</div>
+</details>`;
 });
 }
 
