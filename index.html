@@ -725,7 +725,7 @@ transition: width 0.3s ease;
 <p id="stat-collezione">0</p>
 </div>
 <div class="stat-card">
-<h4>Utilizzi 2026</h4>
+<h4>Utilizzi <span id="stat-year-label">2026</span></h4>
 <p id="stat-year" style="color:var(--accent-orange);">0</p>
 </div>
 <div class="stat-card">
@@ -847,6 +847,9 @@ const todayStr = new Date().toISOString().split('T')[0];
 const startInput = document.getElementById('rotStartDate');
 if (startInput) startInput.value = todayStr;
 
+const labelYear = document.getElementById('stat-year-label');
+if (labelYear) labelYear.innerText = currentYear;
+
 checkAuth();
 });
 
@@ -960,8 +963,27 @@ if (localRotations) rotations = JSON.parse(localRotations);
 }
 
 
+function parseLogDate(log) {
+if (log.timestamp) {
+return new Date(log.timestamp);
+}
+if (log.date) {
+const parts = log.date.split(' ')[0].split('/');
+if (parts.length === 3) {
+return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+}
+}
+return null;
+}
+
 function getYearUsages(shoeCode) {
-return logs.filter(l => l.shoeCode === shoeCode && l.date.includes('/' + currentYear)).length;
+const startOfYear = new Date(currentYear, 0, 1, 0, 0, 0, 0);
+const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59, 999);
+return logs.filter(l => {
+if (l.shoeCode !== shoeCode) return false;
+const d = parseLogDate(l);
+return d && d >= startOfYear && d <= endOfYear;
+}).length;
 }
 
 
@@ -1092,6 +1114,15 @@ saveLocalData();
 renderAll();
 syncToServer();
 }
+};
+
+window.updateRotationStartDate = function(code, newDate) {
+const rot = rotations.find(r => r.shoeCode === code);
+if (!rot || !newDate) return;
+rot.startDate = newDate;
+saveLocalData();
+renderAll();
+syncToServer();
 };
 
 
@@ -1334,7 +1365,11 @@ return;
 }
 
 const now = new Date();
-const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+// Determinazione della settimana corrente di calendario (da lunedì 00:00:00 a domenica 23:59:59)
+const currentDay = now.getDay(); // 0 = Domenica, 1 = Lunedì, ...
+const distanceToMonday = (currentDay === 0 ? -6 : 1 - currentDay);
+const mondayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + distanceToMonday, 0, 0, 0, 0);
+const sundayDate = new Date(mondayDate.getFullYear(), mondayDate.getMonth(), mondayDate.getDate() + 6, 23, 59, 59, 999);
 
 rotations.forEach(rot => {
 const shoe = shoes.find(s => s.code === rot.shoeCode);
@@ -1342,44 +1377,37 @@ if (!shoe) return;
 
 const remainingUses = Math.max(0, shoe.goal - shoe.usages);
 const plannedWeeklyUses = rot.weeklyUses || 1;
-const startDateObj = new Date(rot.startDate);
 
-// Calcolo media effettiva d'uso dalla data di partenza per data finale dinamica
-let currentPace = plannedWeeklyUses;
-if (!isNaN(startDateObj.getTime())) {
-const daysPassed = Math.max(1, (now - startDateObj) / (1000 * 60 * 60 * 24));
-const initialUsages = rot.initialUsages !== undefined ? rot.initialUsages : 0;
-const usesSinceStart = Math.max(0, shoe.usages - initialUsages);
-if (daysPassed >= 3 && usesSinceStart > 0) {
-currentPace = (usesSinceStart / daysPassed) * 7;
-}
+// Calcolo data inizio in base alla data inserita/modificata dall'utente
+let startDateObj = new Date(rot.startDate);
+if (isNaN(startDateObj.getTime())) {
+startDateObj = new Date();
+} else {
+// Normalizziamo l'ora per evitare sfasamenti del fuso orario
+startDateObj = new Date(startDateObj.getFullYear(), startDateObj.getMonth(), startDateObj.getDate(), 0, 0, 0, 0);
 }
 
-const totalWeeks = remainingUses > 0 ? Math.ceil(remainingUses / Math.max(0.1, currentPace)) : 0;
+// Calcolo orizzonte temporale in settimane
+const totalWeeks = remainingUses > 0 ? Math.ceil(remainingUses / Math.max(1, plannedWeeklyUses)) : 0;
 
-// Calcolo Data Finale Dinamica
+// Calcolo Data Finale Prevista partendo dalla Data di Partenza impostata
 let endDateStr = "Raggiunto!";
 if (remainingUses > 0) {
-const endDateObj = new Date(now);
+const endDateObj = new Date(startDateObj.getTime());
 endDateObj.setDate(endDateObj.getDate() + (totalWeeks * 7));
 endDateStr = endDateObj.toLocaleDateString('it-IT');
 }
 
-// Calcolo utilizzi negli ultimi 7 giorni per la barra di completamento settimanale
-const usesLast7Days = logs.filter(l => {
+// Calcolo utilizzi per la settimana di calendario corrente (Lunedì - Domenica)
+const usesThisCalendarWeek = logs.filter(l => {
 if (l.shoeCode !== shoe.code) return false;
-if (l.timestamp) return l.timestamp >= sevenDaysAgo.getTime();
-// Fallback analisi data stringa
-const parts = l.date.split(' ')[0].split('/');
-if (parts.length === 3) {
-const d = new Date(parts[2], parts[1] - 1, parts[0]);
-return d >= sevenDaysAgo;
-}
-return false;
+const logDate = parseLogDate(l);
+return logDate && logDate >= mondayDate && logDate <= sundayDate;
 }).length;
 
-const weeklyPct = Math.min(100, Math.round((usesLast7Days / plannedWeeklyUses) * 100));
+const weeklyPct = Math.min(100, Math.round((usesThisCalendarWeek / plannedWeeklyUses) * 100));
 const targetMonthlyUses = plannedWeeklyUses * 4;
+const startDateVal = rot.startDate || new Date().toISOString().split('T')[0];
 
 container.innerHTML += `
 <details class="subcat-accordion">
@@ -1403,7 +1431,7 @@ container.innerHTML += `
 </div>
 <div class="field-group" style="margin-bottom:0;">
 <label>Data Partenza</label>
-<input type="text" value="${startDateObj.toLocaleDateString('it-IT')}" disabled style="opacity:0.7;">
+<input type="date" value="${startDateVal}" onchange="updateRotationStartDate('${rot.shoeCode}', this.value)">
 </div>
 </div>
 
@@ -1424,7 +1452,7 @@ container.innerHTML += `
 
 <div style="margin-top:10px; font-size:10px; color:var(--text-muted);">
 <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:2px;">
-<span>Obiettivo Settimanale (${usesLast7Days}/${plannedWeeklyUses})</span>
+<span>Obiettivo Settimanale (${usesThisCalendarWeek}/${plannedWeeklyUses})</span>
 <span style="color:var(--accent-volt);">${weeklyPct}%</span>
 </div>
 <div class="progress-bar-bg">
